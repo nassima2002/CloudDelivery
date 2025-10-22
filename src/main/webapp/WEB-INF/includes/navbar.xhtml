@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<nav class="navbar">
+    <div class="navbar-left">
+        <button type="button" class="sidebar-toggle" id="mobile-sidebar-toggle" aria-label="Toggle Mobile Sidebar">
+            <i class="ri-menu-line"></i>
+        </button>
+
+    </div>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <button type="button" class="sidebar-toggle" id="mobile-sidebar-toggle" aria-label="Toggle Mobile Sidebar">
+                <i class="ri-menu-line"></i>
+            </button>
+            <h1 class="navbar-title">#{pageTitle}</h1>
+        </div>
+        <div class="navbar-right">
+            <div class="dropdown">
+                <button type="button" class="flex items-center focus:outline-none" id="user-menu-button">
+                    <div class="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                        <i class="ri-user-fill text-primary-600"></i>
+                    </div>
+                </button>
+
+                <!-- Dropdown menu -->
+                <div class="dropdown-menu" id="user-dropdown">
+                    <div class="dropdown-header">
+                        <div class="dropdown-header-name">Admin User</div>
+                        <div class="dropdown-header-email">admin@example.com</div>
+                    </div>
+                    <h:link outcome="admin-profile" styleClass="dropdown-item">
+                        <i class="ri-user-settings-line"></i> Mon profil
+                    </h:link>
+                    <h:form>
+                        <h:commandLink action="#{loginBean.logout}" styleClass="dropdown-item">
+                            <i class="ri-logout-box-line"></i> Déconnexion
+                        </h:commandLink>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+</nav>
+
+</html>

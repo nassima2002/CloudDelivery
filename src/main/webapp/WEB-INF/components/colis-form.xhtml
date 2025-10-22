@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<div class="modal-overlay" id="add-modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">Ajouter un nouveau colis</h3>
+            <button type="button" class="modal-close" id="close-modal-btn" aria-label="Close">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+        <h:form id="colisForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="description" class="form-label">Description</label>
+                    <h:inputTextarea id="description" value="#{colisBean.description}" styleClass="form-textarea" />
+                </div>
+
+                <div class="form-group">
+                    <label for="poids" class="form-label">Poids (kg)</label>
+                    <h:inputText id="poids" value="#{colisBean.poids}" styleClass="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label for="rue" class="form-label">Rue</label>
+                    <h:inputText id="rue" value="#{colisBean.rue}" styleClass="form-control" />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="ville" class="form-label">Ville</label>
+                        <h:inputText id="ville" value="#{colisBean.ville}" styleClass="form-control" />
+                    </div>
+                    <div class="form-col">
+                        <label for="codePostal" class="form-label">Code postal</label>
+                        <h:inputText id="codePostal" value="#{colisBean.codePostal}" styleClass="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pays" class="form-label">Pays</label>
+                    <h:inputText id="pays" value="#{colisBean.pays}" styleClass="form-control" />
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancel-modal-btn">Annuler</button>
+                <h:commandButton value="Enregistrer" action="#{colisBean.ajouterColis}" styleClass="btn btn-primary" />
+            </div>
+        </h:form>
+    </div>
+</div>
+</html>

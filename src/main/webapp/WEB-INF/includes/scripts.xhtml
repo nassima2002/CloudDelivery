@@ -1,0 +1,149 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sidebar toggle
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+
+        if (sidebarToggle &amp;&amp; sidebar &amp;&amp; mainContent) {
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            });
+        }
+
+        // Mobile sidebar toggle
+        const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        if (mobileSidebarToggle &amp;&amp; sidebar &amp;&amp; sidebarOverlay) {
+            mobileSidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('mobile-open');
+                sidebarOverlay.classList.toggle('active');
+            });
+
+            sidebarOverlay.addEventListener('click', function() {
+                sidebar.classList.remove('mobile-open');
+                sidebarOverlay.classList.remove('active');
+            });
+        }
+
+        // User dropdown toggle
+        const userMenuButton = document.getElementById('user-menu-button');
+        const userDropdown = document.getElementById('user-dropdown');
+
+        if (userMenuButton &amp;&amp; userDropdown) {
+            userMenuButton.addEventListener('click', function(event) {
+                // Prevent event propagation
+                event.stopPropagation();
+
+                // Toggle dropdown visibility
+                userDropdown.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking elsewhere
+            document.addEventListener('click', function(event) {
+                if (!userMenuButton.contains(event.target) &amp;&amp; !userDropdown.contains(event.target)) {
+                    userDropdown.classList.remove('show');
+                }
+            });
+        }
+
+        // Modal toggle
+        const openModalBtn = document.getElementById('open-modal-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const closeEditModalBtn = document.getElementById('cancel-edit-modal-btn')
+        const cancelModalBtn = document.getElementById('cancel-modal-btn');
+        const modalOverlay = document.getElementsByClassName('modal-overlay');
+
+        if (openModalBtn &amp;&amp; modalOverlay) {
+            openModalBtn.addEventListener('click', function() {
+                modalOverlay.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            });
+        }
+
+        if (closeModalBtn &amp;&amp; modalOverlay) {
+            closeModalBtn.addEventListener('click', function() {
+                modalOverlay.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+        }
+
+        if(closeEditModalBtn &amp;&amp; modalOverlay ){
+            closeEditModalBtn.addEventListener('click', function() {
+                modalOverlay.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+        }
+
+        if (cancelModalBtn &amp;&amp; modalOverlay) {
+            cancelModalBtn.addEventListener('click', function() {
+                modalOverlay.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+        }
+
+        // Close modal when clicking outside
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', function(event) {
+                if (event.target === modalOverlay) {
+                    modalOverlay.classList.remove('show');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' &amp;&amp; modalOverlay &amp;&amp; modalOverlay.classList.contains('show')) {
+                modalOverlay.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const openModalBtn    = document.getElementById('open-modal-btn');
+        const addModalOverlay = document.getElementById('add-modal-overlay');
+        const cancelModalBtn  = document.getElementById('cancel-modal-btn');
+        const closeModalBtn   = document.getElementById('close-modal-btn');
+
+        // Ouvre la modal
+        if (openModalBtn &amp;&amp; addModalOverlay) {
+            openModalBtn.addEventListener('click', function() {
+                addModalOverlay.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            });
+        }
+
+        // Ferme la modal via Annuler ou la croix
+        [cancelModalBtn, closeModalBtn].forEach(btn => {
+            if (btn &amp;&amp; addModalOverlay) {
+                btn.addEventListener('click', function() {
+                    addModalOverlay.classList.remove('show');
+                    document.body.style.overflow = '';
+                });
+            }
+        });
+
+        // Clique en-dehors pour fermer
+        if (addModalOverlay) {
+            addModalOverlay.addEventListener('click', function(event) {
+                if (event.target === addModalOverlay) {
+                    addModalOverlay.classList.remove('show');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+
+        // Échap pour fermer
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' &amp;&amp; addModalOverlay.classList.contains('show')) {
+                addModalOverlay.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+    });
+</script>

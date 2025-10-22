@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            const overlay = document.getElementById("edit-modal-overlay");
+            const cancelBtn = document.getElementById("cancel-edit-modal-btn");
+            const closeBtn = document.getElementById("close-edit-modal-btn");
+
+            function closeModal() {
+                if (overlay) {
+                    overlay.classList.remove("show") ;
+                }
+            }
+
+            if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+            if (closeBtn) closeBtn.addEventListener("click", closeModal);
+        });
+    </script>
+</h:head>
+<div class="modal-overlay" id="edit-modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">Modifier le colis</h3>
+            <button type="button" class="modal-close" id="close-edit-modal-btn" aria-label="Close">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+        <h:form id="editForm">
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label for="edit-description" class="form-label">Description</label>
+                    <h:inputTextarea id="edit-description" value="#{colisBean.description}" styleClass="form-textarea" />
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-poids" class="form-label">Poids (kg)</label>
+                    <h:inputText id="edit-poids" value="#{colisBean.poids}" styleClass="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-status" class="form-label">Statut</label>
+                    <h:selectOneMenu id="edit-status" value="#{colisBean.status}" styleClass="form-select">
+                        <f:selectItem itemValue="EN_ATTENTE" itemLabel="En attente" />
+                        <f:selectItem itemValue="EN_TRANSIT" itemLabel="En transit" />
+                        <f:selectItem itemValue="LIVRE" itemLabel="Livré" />
+                        <f:selectItem itemValue="RETOURNE" itemLabel="Retourné" />
+                        <f:selectItem itemValue="ANNULE" itemLabel="Annulé" />
+                    </h:selectOneMenu>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-rue" class="form-label">Rue</label>
+                    <h:inputText id="edit-rue" value="#{colisBean.rue}" styleClass="form-control" />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="edit-ville" class="form-label">Ville</label>
+                        <h:inputText id="edit-ville" value="#{colisBean.ville}" styleClass="form-control" />
+                    </div>
+                    <div class="form-col">
+                        <label for="edit-codePostal" class="form-label">Code postal</label>
+                        <h:inputText id="edit-codePostal" value="#{colisBean.codePostal}" styleClass="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-pays" class="form-label">Pays</label>
+                    <h:inputText id="edit-pays" value="#{colisBean.pays}" styleClass="form-control" />
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancel-edit-modal-btn">Annuler</button>
+                <h:commandButton value="Enregistrer" action="#{colisBean.modifierColis}" styleClass="btn btn-primary">
+                    <f:ajax execute="@form" render=":dataTableForm" onevent="function(data) { if (data.status === 'success') { document.getElementById('edit-modal-overlay').classList.remove('show'); } }" />
+                </h:commandButton>
+            </div>
+        </h:form>
+    </div>
+</div>
+
+
+
+</html>

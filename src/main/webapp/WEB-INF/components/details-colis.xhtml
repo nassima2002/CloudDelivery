@@ -1,0 +1,149 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <div class="modal-overlay" id="details-modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Détails du colis</h3>
+                <button type="button" class="modal-close" id="close-details-modal-btn" aria-label="Close">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <h:panelGroup id="detailsModal">
+                <div class="modal-body">
+                    <div class="colis-details">
+                        <div class="colis-details-header">
+                            <div class="colis-ref">
+                                <span class="colis-label">Référence:</span>
+                                <span class="colis-value">#{colisBean.numeroSuivi}</span>
+                            </div>
+                            <div class="colis-status">
+                                <h:outputText value="Livré" styleClass="status-badge status-delivered"
+                                              rendered="#{colisBean.status.toString() eq 'LIVRE'}" />
+                                <h:outputText value="En transit" styleClass="status-badge status-transit"
+                                              rendered="#{colisBean.status.toString() eq 'EN_TRANSIT'}" />
+                                <h:outputText value="En attente" styleClass="status-badge status-pending"
+                                              rendered="#{colisBean.status.toString() eq 'EN_ATTENTE'}" />
+                                <h:outputText value="Retourné" styleClass="status-badge status-returned"
+                                              rendered="#{colisBean.status.toString() eq 'RETOURNE'}" />
+                                <h:outputText value="Annulé" styleClass="status-badge status-canceled"
+                                              rendered="#{colisBean.status.toString() eq 'ANNULE'}" />
+                            </div>
+                        </div>
+
+                        <div class="colis-details-section">
+                            <h4 class="section-title">Informations générales</h4>
+                            <div class="details-grid">
+                                <div class="details-item">
+                                    <span class="details-label">Description:</span>
+                                    <span class="details-value">#{colisBean.description}</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Poids:</span>
+                                    <span class="details-value">#{colisBean.poids} kg</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Date d'envoi:</span>
+                                    <span class="details-value">
+                                    <h:outputText value="#{colisBean.formatDate(dateEnvoi)}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </h:outputText>
+                                </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="colis-details-section">
+                            <h4 class="section-title">Adresse de livraison</h4>
+                            <div class="details-grid">
+                                <div class="details-item">
+                                    <span class="details-label">Rue:</span>
+                                    <span class="details-value">#{colisBean.rue}</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Ville:</span>
+                                    <span class="details-value">#{colisBean.ville}</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Code postal:</span>
+                                    <span class="details-value">#{colisBean.codePostal}</span>
+                                </div>
+                                <div class="details-item">
+                                    <span class="details-label">Pays:</span>
+                                    <span class="details-value">#{colisBean.pays}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="colis-details-section">
+                            <h4 class="section-title">Historique des statuts</h4>
+                            <div class="status-timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-icon"><i class="ri-add-circle-line"></i></div>
+                                    <div class="timeline-content">
+                                        <h5>Créé</h5>
+                                        <p>#{colisBean.getStatusDate('CREE')}</p>
+                                    </div>
+                                    <h:outputText styleClass="active-marker" rendered="#{colisBean.hasStatus('CREE')}" />
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-icon"><i class="ri-time-line"></i></div>
+                                    <div class="timeline-content">
+                                        <h5>En attente</h5>
+                                        <p>#{colisBean.getStatusDate('EN_ATTENTE')}</p>
+                                    </div>
+                                    <h:outputText styleClass="active-marker" rendered="#{colisBean.hasStatus('EN_ATTENTE')}" />
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-icon"><i class="ri-truck-line"></i></div>
+                                    <div class="timeline-content">
+                                        <h5>En transit</h5>
+                                        <p>#{colisBean.getStatusDate('EN_TRANSIT')}</p>
+                                    </div>
+                                    <h:outputText styleClass="active-marker" rendered="#{colisBean.hasStatus('EN_TRANSIT')}" />
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-icon"><i class="ri-check-double-line"></i></div>
+                                    <div class="timeline-content">
+                                        <h5>Livré</h5>
+                                        <p>#{colisBean.getStatusDate('LIVRE')}</p>
+                                    </div>
+                                    <h:outputText styleClass="active-marker" rendered="#{colisBean.hasStatus('LIVRE')}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" id="close-details-btn">Fermer</button>
+                        <h:form>
+                            <h:commandButton value="Générer bordereau" action="#{colisBean.genererBordereau(colisBean.colisId)}" styleClass="btn btn-primary">
+                                <i class="ri-file-pdf-line"></i>
+                            </h:commandButton>
+                        </h:form>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            const overlay = document.getElementById("details-modal-overlay");
+            const closeBtn = document.getElementById("close-details-btn");
+            const closeIcon = document.getElementById("close-details-modal-btn");
+
+            function closeModal() {
+                if (overlay) {
+                    overlay.style.display = "none";
+                }
+            }
+
+            if (closeBtn) closeBtn.addEventListener("click", closeModal);
+            if (closeIcon) closeIcon.addEventListener("click", closeModal);
+        });
+    </script>
+
+</ui:composition>

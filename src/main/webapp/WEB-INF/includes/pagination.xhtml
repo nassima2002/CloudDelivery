@@ -1,0 +1,62 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core">
+
+    <!-- La pagination -->
+    <div class="pagination-container">
+        <h:form id="paginationInfoForm">
+            <div class="pagination-info">
+                Affichage de <strong>#{colisBean.firstItemIndex + 1}</strong> à <strong>#{colisBean.lastItemIndex}</strong> sur <strong>#{colisBean.totalItems}</strong> colis
+            </div>
+        </h:form>
+
+        <h:form id="paginationForm">
+            <div class="pagination-controls">
+                <h:commandButton value="«" action="#{colisBean.firstPage}" styleClass="pagination-button"
+                                 disabled="#{colisBean.currentPage == 1}">
+                    <f:ajax render="@form :dataTableForm :paginationInfoForm" />
+                </h:commandButton>
+
+                <h:commandButton value="‹" action="#{colisBean.previousPage}" styleClass="pagination-button"
+                                 disabled="#{colisBean.currentPage == 1}">
+                    <f:ajax render="@form :dataTableForm :paginationInfoForm" />
+                </h:commandButton>
+
+                <div class="pagination-pages">
+                    <ui:repeat value="#{colisBean.pageNumbers}" var="pageNumber">
+                        <h:commandButton value="#{pageNumber}" action="#{colisBean.goToPage(pageNumber)}"
+                                         styleClass="pagination-button #{colisBean.currentPage == pageNumber ? 'active' : ''}">
+                            <f:ajax render="@form :dataTableForm :paginationInfoForm" />
+                        </h:commandButton>
+                    </ui:repeat>
+                </div>
+
+                <h:commandButton value="›" action="#{colisBean.nextPage}" styleClass="pagination-button"
+                                 disabled="#{colisBean.currentPage == colisBean.totalPages}">
+                    <f:ajax render="@form :dataTableForm :paginationInfoForm" />
+                </h:commandButton>
+
+                <h:commandButton value="»" action="#{colisBean.lastPage}" styleClass="pagination-button"
+                                 disabled="#{colisBean.currentPage == colisBean.totalPages}">
+                    <f:ajax render="@form :dataTableForm :paginationInfoForm" />
+                </h:commandButton>
+            </div>
+        </h:form>
+
+        <!-- <h:form id="pageSizeForm">
+             <div class="pagination-size">
+                 <label for="pageSize" class="pagination-label">Éléments par page:</label>
+                 <h:selectOneMenu id="pageSize" value="#{colisBean.pageSize}" styleClass="pagination-select">
+                     <f:selectItem itemValue="5" itemLabel="5" />
+                     <f:selectItem itemValue="10" itemLabel="10" />
+                     <f:selectItem itemValue="20" itemLabel="20" />
+                     <f:selectItem itemValue="50" itemLabel="50" />
+                     <f:ajax execute="@this"
+                             render=":dataTableForm :paginationForm :paginationInfoForm"
+                             listener="#{colisBean.setPageSize(colisBean.pageSize)}" />
+                 </h:selectOneMenu>
+             </div>
+         </h:form> -->
+    </div>
+</ui:composition>
