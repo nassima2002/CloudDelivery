@@ -1,0 +1,176 @@
+<!-- <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+<h:head>
+    <title>Suivi du Colis</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpJlyHTEGxU0AhGgAKhjzb_hKXIHLtaVU&amp;callback=initMap" async="async" defer="defer"></script>
+    <script>
+        let map, marker;
+        let pollingInterval;
+        let livreurId = 1; // ID du livreur à suivre, à adapter selon votre logique
+
+        function initMap() {
+            // Récupérer les coordonnées du livreur depuis les attributs data
+            const livreurPosition = {
+                lat: parseFloat(document.getElementById("livreurPosition").getAttribute("data-lat")),
+                lng: parseFloat(document.getElementById("livreurPosition").getAttribute("data-lng"))
+            };
+
+            // Initialiser la carte Google Maps
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: livreurPosition,
+                zoom: 13
+            });
+
+            // Ajouter un marqueur sur la carte pour afficher la position du livreur
+            marker = new google.maps.Marker({
+                position: livreurPosition,
+                map: map,
+                title: "Position du livreur"
+            });
+
+            // Démarrer le polling AJAX après que la carte soit chargée
+            startPolling();
+        }
+
+        function startPolling() {
+            // Mettre à jour le statut
+            document.getElementById('pollingStatus').textContent = 'Actif';
+            document.getElementById('pollingStatus').className = 'connected';
+
+            // Effectuer un premier appel immédiatement
+            pollLivreurPosition();
+
+            // Configurer le polling toutes les 5 secondes
+            pollingInterval = setInterval(pollLivreurPosition, 5000);
+        }
+
+        function stopPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+
+                document.getElementById('pollingStatus').textContent = 'Inactif';
+                document.getElementById('pollingStatus').className = 'disconnected';
+            }
+        }
+
+        function pollLivreurPosition() {
+            // Récupérer le chemin de base de l'application
+            const contextPath = '#{request.contextPath}';
+
+            // Effectuer une requête AJAX pour obtenir la position actuelle
+            fetch(contextPath + '/api/livreur/' + livreurId + '/position')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur lors de la récupération de la position');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Mettre à jour la position du marqueur sur la carte
+                    updateMarkerPosition(data.latitude, data.longitude);
+
+                    // Mettre à jour le texte d'information
+                    document.getElementById('positionInfo').textContent = 
+                        'Position mise à jour: Lat: ' + data.latitude.toFixed(6) + ', Lng: ' + data.longitude.toFixed(6);
+
+                    // Mettre à jour le statut du dernier polling réussi
+                    document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+                })
+                .catch(error => {
+                    console.error('Erreur de polling:', error);
+                    document.getElementById('pollingStatus').textContent = 'Erreur';
+                    document.getElementById('pollingStatus').className = 'error';
+                });
+        }
+
+        // Fonction pour mettre à jour la position du marqueur sur la carte
+        function updateMarkerPosition(latitude, longitude) {
+            const newPosition = {
+                lat: latitude,
+                lng: longitude
+            };
+
+            // Mettre à jour la position du marqueur
+            marker.setPosition(newPosition);
+
+            // Centrer la carte sur la nouvelle position
+            map.panTo(newPosition);
+        }
+
+        // Arrêter le polling AJAX lorsque la page est fermée
+        window.addEventListener('beforeunload', function() {
+            stopPolling();
+        });
+    </script>
+    <style>
+        #pollingStatus {
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .connected {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .disconnected {
+            background-color: #f44336;
+            color: white;
+        }
+        .error {
+            background-color: #ff9800;
+            color: white;
+        }
+        #positionInfo {
+            margin-top: 10px;
+            font-style: italic;
+        }
+        #lastUpdate {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        .polling-controls {
+            margin-top: 10px;
+        }
+        .btn {
+            padding: 5px 10px;
+            border-radius: 4px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .btn:hover {
+            background-color: #0b7dda;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <h:form>
+        <h2>Suivi du Colis</h2>
+
+        <div>
+            Statut du suivi: <span id="pollingStatus">En attente...</span>
+            <span>Dernière mise à jour: <span id="lastUpdate">-</span></span>
+        </div>
+
+        <div class="polling-controls">
+            <button type="button" class="btn" onclick="startPolling(); return false;">Démarrer le suivi</button>
+            <button type="button" class="btn" onclick="stopPolling(); return false;">Arrêter le suivi</button>
+        </div>
+
+        <div id="positionInfo">Position initiale chargée</div>
+
+        // Balise pour injecter la position du livreur 
+        <div id="livreurPosition"
+             data-lat="#{colisBean.latitudeLivreur}"
+             data-lng="#{colisBean.longitudeLivreur}"></div>
+
+        <div id="map" style="height: 400px; width: 100%; margin-top: 15px;"></div>
+    </h:form>
+</h:body>
+</html> -->

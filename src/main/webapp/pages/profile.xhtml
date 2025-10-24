@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>Mon Profil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles for form validation messages */
+        .error-message {
+            @apply text-red-500 text-sm mt-1 block;
+        }
+
+        .success-message {
+            @apply bg-green-50 text-green-800 p-3 rounded-md mb-4;
+        }
+
+        .error-alert {
+            @apply bg-red-50 text-red-800 p-3 rounded-md mb-4;
+        }
+    </style>
+</h:head>
+
+<h:body class="bg-gray-50 text-gray-800">
+    <div class="min-h-screen bg-gray-50">
+        <!-- Include the navbar component -->
+        <ui:include src="sidebar.xhtml" />
+
+        <!-- Main content -->
+        <main class="py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
+                    <h1 class="text-2xl font-bold text-gray-800">Mon Profil</h1>
+                </div>
+
+                <!-- Welcome message -->
+                <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-md">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="ri-user-smile-line text-green-500 text-xl"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-green-700">
+                                Bienvenue dans votre Profile, <span class="font-medium">#{loginBean.utilisateur.prenom}</span> !
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Forms -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Personal Information -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100">
+                            <div class="flex items-center">
+                                <i class="ri-user-settings-line text-gray-500 mr-2"></i>
+                                <h2 class="font-semibold text-gray-800">Informations Personnelles</h2>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <h:form id="infoForm">
+                                <!-- Messages -->
+                                <h:messages for="infoForm"
+                                            infoClass="success-message"
+                                            errorClass="error-alert"
+                                            warnClass="bg-yellow-50 text-yellow-800 p-3 rounded-md mb-4"
+                                            fatalClass="error-alert"
+                                            layout="table"
+                                            styleClass="w-full mb-4" />
+
+                                <div class="space-y-4">
+                                    <!-- Nom -->
+                                    <div>
+                                        <label for="nom" class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+                                        <h:inputText id="nom" value="#{loginBean.utilisateur.nom}"
+                                                     styleClass="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                                     required="true"
+                                                     requiredMessage="Le nom est obligatoire" />
+                                        <h:message for="nom" styleClass="error-message text-red-600" />
+                                    </div>
+
+                                    <!-- Prénom -->
+                                    <div>
+                                        <label for="prenom" class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
+                                        <h:inputText id="prenom" value="#{loginBean.utilisateur.prenom}"
+                                                     styleClass="mt-1 block w-full  px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                                     required="true"
+                                                     requiredMessage="Le prénom est obligatoire" />
+                                        <h:message for="prenom" styleClass="error-message text-red-600" />
+                                    </div>
+
+                                    <!-- Email -->
+                                    <div>
+                                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                        <h:inputText id="email" value="#{loginBean.utilisateur.email}"
+                                                     styleClass="mt-1 block w-full px-3 py-2  border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                                     required="true"
+                                                     requiredMessage="L'email est obligatoire" />
+                                        <h:message for="email" styleClass="error-message text-red-600" />
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="pt-2">
+                                        <h:commandButton value="Mettre à jour" action="#{profilBean.updateInfo}"
+                                                         styleClass="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" />
+                                    </div>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+
+                    <!-- Password Change -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100">
+                            <div class="flex items-center">
+                                <i class="ri-lock-password-line text-gray-500 mr-2"></i>
+                                <h2 class="font-semibold text-gray-800">Changer de mot de passe</h2>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <h:form id="passwordForm">
+                                <!-- Messages -->
+                                <h:messages for="passwordForm"
+                                            infoClass="success-message"
+                                            errorClass="error-alert"
+                                            warnClass="bg-yellow-50 text-yellow-800 p-3 rounded-md mb-4"
+                                            fatalClass="error-alert"
+                                            layout="table"
+                                            styleClass="w-full mb-4" />
+
+                                <div class="space-y-4">
+                                    <!-- Current Password -->
+                                    <div>
+                                        <label for="oldPassword" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe actuel</label>
+                                        <div class="relative">
+                                            <h:inputSecret id="oldPassword" value="#{profilBean.oldPassword}"
+                                                           styleClass="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                                           required="true"
+                                                           requiredMessage="Le mot de passe actuel est obligatoire" />
+                                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                                <i class="ri-eye-off-line text-gray-400"></i>
+                                            </div>
+                                        </div>
+                                        <h:message for="oldPassword" styleClass="error-message" />
+                                    </div>
+
+                                    <!-- New Password -->
+                                    <div>
+                                        <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">Nouveau mot de passe</label>
+                                        <div class="relative">
+                                            <h:inputSecret id="newPassword" value="#{profilBean.newPassword}"
+                                                           styleClass="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                                           required="true"
+                                                           requiredMessage="Le nouveau mot de passe est obligatoire" />
+                                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                                <i class="ri-eye-off-line text-gray-400"></i>
+                                            </div>
+                                        </div>
+                                        <h:message for="newPassword" styleClass="error-message" />
+                                    </div>
+
+                                    <!-- Confirm Password -->
+                                    <div>
+                                        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirmer le mot de passe</label>
+                                        <div class="relative">
+                                            <h:inputSecret id="confirmPassword" value="#{profilBean.confirmPassword}"
+                                                           styleClass="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                                           required="true"
+                                                           requiredMessage="La confirmation du mot de passe est obligatoire" />
+                                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                                <i class="ri-eye-off-line text-gray-400"></i>
+                                            </div>
+                                        </div>
+                                        <h:message for="confirmPassword" styleClass="error-message" />
+                                    </div>
+
+                                    <!-- Password Requirements -->
+                                    <div class="bg-gray-50 p-3 rounded-md text-sm text-gray-600">
+                                        <p class="font-medium mb-2">Le mot de passe doit contenir :</p>
+                                        <ul class="space-y-1 pl-5 list-disc">
+                                            <li>Au moins 8 caractères</li>
+                                            <li>Au moins une lettre majuscule</li>
+                                            <li>Au moins un chiffre</li>
+                                            <li>Au moins un caractère spécial</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="pt-2">
+                                        <h:commandButton value="Changer le mot de passe" action="#{profilBean.updatePassword}"
+                                                         styleClass="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" />
+                                    </div>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Section -->
+                <div class="mt-6 bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100">
+                        <div class="flex items-center">
+                            <i class="ri-shield-check-line text-gray-500 mr-2"></i>
+                            <h2 class="font-semibold text-gray-800">Sécurité du compte</h2>
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Last Login -->
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-primary-50 p-3 rounded-full">
+                                        <i class="ri-login-circle-line text-primary-600"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-sm font-medium text-gray-900">Dernière connexion</h3>
+                                    <p class="mt-1 text-sm text-gray-500">#{profilBean.formatDate(profilBean.lastConnectionDate)}</p>
+                                </div>
+                            </div>
+
+                            <!-- Account Created -->
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-primary-50 p-3 rounded-full">
+                                        <i class="ri-user-add-line text-primary-600"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-sm font-medium text-gray-900">Compte créé le</h3>
+                                    <p class="mt-1 text-sm text-gray-500">#{profilBean.formatDate(profilBean.creationDate)}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                       <!--  <div class="mt-6 pt-6 border-t border-gray-100">
+                            <h3 class="text-sm font-medium text-gray-900 mb-3">Options de sécurité supplémentaires</h3>
+
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="ri-notification-4-line text-gray-500 mr-2"></i>
+                                        <span class="text-sm text-gray-700">Notifications de connexion</span>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" value="" class="sr-only peer" checked="checked" />
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                                    </label>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="ri-device-line text-gray-500 mr-2"></i>
+                                        <span class="text-sm text-gray-700">Appareils connectés</span>
+                                    </div>
+                                    <button type="button" class="text-sm text-primary-600 hover:text-primary-800 font-medium">
+                                        Gérer
+                                    </button>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</h:body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html" xmlns:f="http://java.sun.com/jsf/core">
+<head>
+    <title>Gestion des Livreurs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen p-8">
+<h1 class="text-3xl font-bold mb-6 text-center">Gestion des Livreurs</h1>
+
+<!-- Formulaire pour ajouter un livreur -->
+<h:form class="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <!-- Champs pour saisir les informations du livreur -->
+    <div class="mb-4">
+        <label class="block text-gray-700">Nom :</label>
+        <h:inputText value="#{livreurBean.nouveauLivreur.user.nom}"
+                     styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
+    </div>
+
+    <div class="mb-4">
+        <label class="block text-gray-700">Prénom :</label>
+        <h:inputText value="#{livreurBean.nouveauLivreur.user.prenom}"
+                     styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
+    </div>
+
+    <div class="mb-4">
+        <label class="block text-gray-700">Email :</label>
+        <h:inputText value="#{livreurBean.nouveauLivreur.user.email}"
+                     styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
+    </div>
+
+    <div class="mb-4">
+        <label class="block text-gray-700">Disponibilité :</label>
+        <h:inputText value="#{livreurBean.nouveauLivreur.disponibiliter}"
+                     styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
+    </div>
+
+    <div class="flex space-x-4">
+        <h:commandButton value="Ajouter" action="#{livreurBean.ajouterLivreur}"
+                         styleClass="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" />
+    </div>
+</h:form>
+
+<!-- Liste des livreurs -->
+<!-- Partie modifiée dans la section Liste des livreurs -->
+<div class="mt-12">
+    <h2 class="text-2xl font-semibold mb-4">Liste des Livreurs</h2>
+    <h:form>
+        <h:dataTable value="#{livreurBean.livreurs}" var="livreur" styleClass="min-w-full bg-white">
+            <h:column>
+                <f:facet name="header">Nom</f:facet>
+                <h:inputText value="#{livreur.user.nom}"
+                             styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
+            </h:column>
+            <h:column>
+                <f:facet name="header">Prénom</f:facet>
+                <h:inputText value="#{livreur.user.prenom}"
+                             styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
+            </h:column>
+            <h:column>
+                <f:facet name="header">Email</f:facet>
+                <h:inputText value="#{livreur.user.email}"
+                             styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
+            </h:column>
+            <h:column>
+                <f:facet name="header">Disponibilité</f:facet>
+                <h:inputText value="#{livreur.disponibiliter}"
+                             styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
+            </h:column>
+            <h:column>
+                <f:facet name="header">Actions</f:facet>
+                <!-- Correction : suppression de l'inputHidden inutile qui n'est lié à aucune valeur -->
+
+                <!-- Mettre à jour les données en envoyant l'objet livreur complet -->
+                <h:commandButton value="Mettre à jour"
+                                 action="#{livreurBean.modifierLivreur(livreur)}"
+                                 styleClass="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2" />
+
+                <!-- Supprimer le livreur -->
+                <h:commandButton value="Supprimer"
+                                 action="#{livreurBean.supprimerLivreur(livreur.id)}"
+                                 onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livreur ?');"
+                                 styleClass="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" />
+            </h:column>
+        </h:dataTable>
+    </h:form>
+</div>
+
+</body>
+</html>

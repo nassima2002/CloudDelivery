@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>Gestion des Livreurs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .custom-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+        }
+
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .table thead {
+            background-color: #e9ecef;
+        }
+
+        .table thead th {
+            font-weight: 600;
+        }
+
+        .btn i {
+            margin-right: 4px;
+        }
+
+        .disponible {
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .non-disponible {
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        .page-title {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        /* Style pour le modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="container-fluid">
+        <div class="row">
+            <ui:include src="sidebar.xhtml" />
+
+            <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Titre -->
+                <div class="page-title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4">
+                    <h1 class="h3">Gestion des Livreurs</h1>
+                </div>
+
+                <div class="alert alert-success" role="alert">
+                    Bienvenue dans la gestion des livreurs, #{loginBean.utilisateur.prenom} !
+                </div>
+
+                <!-- Section Livreurs -->
+                <div class="custom-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5><i class="bi bi-people me-2"></i>Liste des Livreurs Disponibles</h5>
+                    </div>
+
+                    <!-- Messages -->
+                    <h:messages id="messages" styleClass="alert alert-info" globalOnly="true" />
+
+                    <!-- Tableau des livreurs -->
+                    <div class="table-responsive">
+                        <h:dataTable id="livreursTable" value="#{livreurColisBean.livreursIndisponibles}" var="livreur" styleClass="table table-striped table-hover align-middle">
+                            <h:column>
+                                <f:facet name="header">ID</f:facet>
+                                #{livreur.id}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Nom</f:facet>
+                                #{livreur.user.nom}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Prénom</f:facet>
+                                #{livreur.user.prenom}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Email</f:facet>
+                                <i class="bi bi-envelope me-1 text-secondary"></i> #{livreur.user.email}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Disponibilité</f:facet>
+                                <h:outputText value="#{livreur.disponibiliter}" styleClass="#{livreur.disponibiliter eq 'Disponible' ? 'disponible' : 'non-disponible'}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Affecter un colis</f:facet>
+                                <h:selectOneMenu value="#{livreurColisBean.idColisAffectation}" styleClass="border rounded px-2 py-1 w-56">
+                                    <f:selectItem itemLabel="-- Choisir un colis --" itemValue="#{null}" />
+                                    <f:selectItems value="#{livreurColisBean.colisNonAffectes}" var="c"
+                                                   itemLabel="#{c.description}" itemValue="#{c.id}" />
+                                </h:selectOneMenu>
+                                <h:commandButton value="Affecter"
+                                                 styleClass="ml-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded"
+                                                 action="#{livreurColisBean.affecterColisAuLivreur}">
+                                    <f:setPropertyActionListener value="#{livreur.id}" target="#{livreurColisBean.idLivreurSelectionne}" />
+                                </h:commandButton>
+                            </h:column>
+                        </h:dataTable>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+</h:body>
+</html>

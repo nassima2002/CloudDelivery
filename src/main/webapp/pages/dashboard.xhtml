@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>Dashboard Client</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</h:head>
+
+<h:body class="bg-gray-50 text-gray-800">
+    <!-- Remplacer la structure flex avec sidebar par la nouvelle structure avec navbar -->
+    <div class="min-h-screen bg-gray-50">
+        <!-- Include the navbar component instead of sidebar -->
+        <ui:include src="sidebar.xhtml" />
+
+        <!-- Main content -->
+        <main class="py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold text-gray-800">Tableau de Bord</h1>
+                </div>
+
+                <!-- Welcome message -->
+                <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-md">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="ri-user-smile-line text-green-500 text-xl"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-green-700">
+                                Bienvenue dans votre tableau de bord, <span class="font-medium">#{loginBean.utilisateur.prenom}</span> !
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats overview -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Orders card -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-5">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Colis</p>
+                                    <p class="text-2xl font-bold text-gray-800 mt-1">#{dashboardBean.nombreCommandes}</p>
+                                </div>
+                                <div class="bg-primary-50 p-3 rounded-full">
+                                    <i class="ri-shopping-bag-line text-primary-500 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- In progress card -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-5">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">En cours</p>
+                                    <p class="text-2xl font-bold text-gray-800 mt-1">#{dashboardBean.commandesEnCours}</p>
+                                </div>
+                                <div class="bg-amber-50 p-3 rounded-full">
+                                    <i class="ri-truck-line text-amber-500 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total spent card -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-5">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Total dépensé</p>
+                                    <p class="text-2xl font-bold text-gray-800 mt-1">#{dashboardBean.totalDepense} DHs</p>
+                                </div>
+                                <div class="bg-emerald-50 p-3 rounded-full">
+                                    <i class="ri-money-euro-circle-line text-emerald-500 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two column section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Recent orders -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-5 py-4 border-b border-gray-100">
+                            <h2 class="font-semibold text-gray-800">Derniers colis</h2>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <h:dataTable value="#{dashboardBean.dernieresCommandes}" var="commande"
+                                         styleClass="min-w-full divide-y divide-gray-200"
+                                         rendered="#{not empty dashboardBean.dernieresCommandes}">
+                                <h:column>
+                                    <f:facet name="header">
+                                        <div class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            N° Commande
+                                        </div>
+                                    </f:facet>
+                                    <div class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        #{commande.numeroSuivi}
+                                    </div>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">
+                                        <div class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Date
+                                        </div>
+                                    </f:facet>
+                                    <div class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <h:outputText value="#{dashboardBean.formatDate(commande)}"/>
+                                    </div>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">
+                                        <div class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Montant
+                                        </div>
+                                    </f:facet>
+                                    <div class="px-6 py-4 whitespace-nowrap">
+                                        <span class="font-medium text-gray-900">#{dashboardBean.getMontant(commande)} DHs</span>
+                                    </div>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">
+                                        <div class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Statut
+                                        </div>
+                                    </f:facet>
+                                    <div class="px-6 py-4 whitespace-nowrap">
+                                        <span class="#{commande.status eq 'LIVRE' ? 'bg-green-100 text-green-800' : commande.status eq 'EN_TRANSIT' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'} px-2 py-1 text-xs font-medium rounded-full">
+                                            #{dashboardBean.getStatut(commande)}
+                                        </span>
+                                    </div>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">
+                                        <div class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions
+                                        </div>
+                                    </f:facet>
+                                    <div class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <h:link outcome="details-commande" styleClass="inline-flex items-center px-3 py-1.5 border border-primary-300 text-sm font-medium rounded-md text-primary-700 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                            <f:param name="id" value="#{commande.id}" />
+                                            <i class="ri-eye-line mr-1"></i> Détails
+                                        </h:link>
+                                    </div>
+                                </h:column>
+                            </h:dataTable>
+
+                            <h:panelGroup rendered="#{empty dashboardBean.dernieresCommandes}">
+                                <div class="flex flex-col items-center justify-center py-12">
+                                    <i class="ri-shopping-cart-line text-gray-300 text-5xl mb-4"></i>
+                                    <p class="text-gray-500 mb-4">Vous n'avez pas encore de colis.</p>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                        <div class="px-5 py-4 border-t border-gray-100 text-center">
+                            <h:link outcome="mes-colis" styleClass="text-sm font-medium text-primary-600 hover:text-primary-500">
+                                Voir tous mes colis
+                            </h:link>
+                        </div>
+                    </div>
+
+                    <!-- Profile section -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+                            <h2 class="font-semibold text-gray-800">Mon profil</h2>
+                            <h:link outcome="profile" styleClass="inline-flex items-center px-3 py-1.5 border border-primary-300 text-sm font-medium rounded-md text-primary-700 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                <i class="ri-edit-line mr-1"></i> Modifier
+                            </h:link>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-center mb-6">
+                                <div class="bg-primary-100 rounded-full p-3 mr-4">
+                                    <i class="ri-user-line text-primary-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900">#{loginBean.utilisateur.prenom} #{loginBean.utilisateur.nom}</h3>
+                                    <p class="text-gray-500">Client</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="flex items-center border-b border-gray-100 pb-3">
+                                    <i class="ri-mail-line text-gray-400 mr-3"></i>
+                                    <div>
+                                        <p class="text-xs text-gray-500">Email</p>
+                                        <p class="text-sm font-medium">#{loginBean.utilisateur.email}</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center pt-2">
+                                    <i class="ri-user-settings-line text-gray-400 mr-3"></i>
+                                    <div>
+                                        <p class="text-xs text-gray-500">Compte créé le</p>
+                                        <p class="text-sm font-medium">#{profilBean.formatDate(profilBean.creationDate)}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</h:body>
+</html>

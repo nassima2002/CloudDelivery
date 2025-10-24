@@ -1,0 +1,104 @@
+/* BODY GLOBAL */
+body {
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* min-height au lieu de height */
+    margin: 0;
+    padding: 20px; /* Ajoute un petit padding pour éviter que la card touche les bords */
+    font-family: Arial, sans-serif;
+}
+
+/* CARTE FORM */
+.card {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    max-width: 400px;
+    width: 100%;
+}
+
+/* TITRE */
+.card h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+/* PARAGRAPH */
+.card p {
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+/* LABELS */
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #6c757d;
+}
+
+/* INPUTS */
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+
+/* BOUTON */
+.btn {
+    background-color: #343a40;
+    color: #fff;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn:hover {
+    background-color: #23272b;
+}
+
+/* CENTRAGE TEXTE */
+.text-center {
+    text-align: center;
+}
+
+/* SPÉCIAL POUR LES RADIO BOUTONS */
+.role-radio {
+    display: flex;
+    gap: 20px; /* espace entre Client et Livreur */
+    margin: 10px 0 20px 0; /* marge au-dessus et en-dessous */
+}
+
+.role-radio label {
+    margin-right: 10px;
+    color: #495057;
+}
+/* Message d'erreur rouge */
+.text-danger {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+
+/* Si tu veux rendre l'input rouge quand il y a une erreur : */
+input:invalid, select:invalid, textarea:invalid {
+    border-color: red;
+}
+.error-message {
+    color: red;
+    font-weight: bold;
+}

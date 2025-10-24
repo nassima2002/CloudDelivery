@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // User dropdown toggle
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userDropdown = document.getElementById('user-dropdown');
+
+            if (userMenuButton &amp;&amp; userDropdown) {
+                userMenuButton.addEventListener('click', function(event) {
+                    // Empêcher la propagation de l'événement
+                    event.stopPropagation();
+
+                    // Toggle du dropdown
+                    userDropdown.classList.toggle('hidden');
+                    userMenuButton.setAttribute('aria-expanded', userDropdown.classList.contains('hidden') ? 'false' : 'true');
+                });
+
+                // Fermer le dropdown quand on clique ailleurs
+                document.addEventListener('click', function(event) {
+                    if (!userMenuButton.contains(event.target) &amp;&amp; !userDropdown.contains(event.target)) {
+                        userDropdown.classList.add('hidden');
+                        userMenuButton.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
+
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (mobileMenuButton &amp;&amp; mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                    mobileMenuButton.setAttribute('aria-expanded', mobileMenu.classList.contains('hidden') ? 'false' : 'true');
+                });
+            }
+
+            // Log pour déboguer
+            console.log('Menu script initialized');
+            console.log('User menu button:', userMenuButton);
+            console.log('User dropdown:', userDropdown);
+            console.log('Mobile menu button:', mobileMenuButton);
+            console.log('Mobile menu:', mobileMenu);
+        });
+    </script>
+</h:head>
+
+<h:body>
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Logo and navigation links -->
+                <div class="flex">
+                    <!-- Logo/Brand -->
+                    <div class="flex-shrink-0 flex items-center">
+                        <h1 class="text-xl font-bold text-primary-600">Espace Livreur</h1>
+                    </div>
+
+                    <!-- Desktop Navigation Links -->
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <h:link outcome="dashboard"
+                                styleClass="border-transparent text-gray-500 hover:border-primary-500 hover:text-primary-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="ri-dashboard-line mr-2"></i> Tableau de bord
+                        </h:link>
+
+                        <h:link outcome="ListCommande"
+                                styleClass="border-transparent text-gray-500 hover:border-primary-500 hover:text-primary-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="ri-shopping-bag-line mr-2"></i> Mes commandes
+                        </h:link>
+
+
+                    </div>
+                </div>
+
+                <!-- User Profile Dropdown -->
+                <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                    <!-- Notifications -->
+                    <button type="button" class="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        <span class="sr-only">Voir les notifications</span>
+                        <i class="ri-notification-3-line text-xl"></i>
+                    </button>
+
+                    <!-- Profile dropdown -->
+                    <div class="ml-3 relative">
+                        <div>
+                            <button type="button" class="bg-white flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                <span class="sr-only">Ouvrir le menu utilisateur</span>
+                                <div class="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                                    <i class="ri-user-fill text-primary-600"></i>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Dropdown menu, show/hide based on menu state -->
+                        <div class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" id="user-dropdown">
+                            <div class="block px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
+                                <div class="font-medium">#{loginBean.utilisateur.prenom} #{loginBean.utilisateur.nom}</div>
+                                <div class="text-xs text-gray-500 mt-1">#{loginBean.utilisateur.email}</div>
+                            </div>
+                            <h:link outcome="profile" styleClass="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                <i class="ri-user-settings-line mr-2"></i> Mon profil
+                            </h:link>
+                            <h:form>
+                                <h:commandLink action="#{loginBean.logout}"
+                                               styleClass="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="ri-logout-box-line mr-2"></i> Déconnexion
+                                </h:commandLink>
+                            </h:form>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="flex items-center sm:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500" aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-button">
+                        <span class="sr-only">Ouvrir le menu principal</span>
+                        <i class="ri-menu-line text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu, show/hide based on menu state -->
+        <div class="sm:hidden hidden" id="mobile-menu">
+            <div class="pt-2 pb-3 space-y-1">
+                <h:link outcome="dashboard"
+                        styleClass="bg-primary-50 border-primary-500 text-primary-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    <i class="ri-dashboard-line mr-2"></i> Tableau de bord
+                </h:link>
+
+                <h:link outcome="commandes"
+                        styleClass="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    <i class="ri-shopping-bag-line mr-2"></i> Mes colis
+                </h:link>
+
+                <h:link outcome="historique"
+                        styleClass="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    <i class="ri-history-line mr-2"></i> Historique
+                </h:link>
+
+                <h:link outcome="profile"
+                        styleClass="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    <i class="ri-user-settings-line mr-2"></i> Mon profil
+                </h:link>
+            </div>
+
+            <div class="pt-4 pb-3 border-t border-gray-200">
+                <div class="flex items-center px-4">
+                    <div class="flex-shrink-0">
+                        <div class="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
+                            <i class="ri-user-fill text-primary-600"></i>
+                        </div>
+                    </div>
+                    <div class="ml-3">
+                        <div class="text-base font-medium text-gray-800">#{loginBean.utilisateur.prenom} #{loginBean.utilisateur.nom}</div>
+                        <div class="text-sm font-medium text-gray-500">#{loginBean.utilisateur.email}</div>
+                    </div>
+                </div>
+                <div class="mt-3 space-y-1">
+                    <h:form>
+                        <h:commandButton value="Déconnexion" action="#{loginBean.logout}"
+                                         styleClass="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                            <i class="ri-logout-box-line mr-2"></i>Déconnexion
+                        </h:commandButton>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </nav>
+</h:body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>Mon Profil</title>
+    <link href="Style.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+</h:head>
+
+<h:body class="bg-light">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse" style="min-height: 100vh;">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4 p-3">
+                        <h5 class="text-white">Espace Client</h5>
+                        <div class="text-center bg-secondary bg-opacity-25 rounded p-3">
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                 style="width: 60px; height: 60px;">
+                                <i class="bi bi-person-fill text-dark" style="font-size: 2rem;"></i>
+                            </div>
+                            <div class="text-white fw-bold">
+                                #{loginBean.utilisateur.prenom} #{loginBean.utilisateur.nom}
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <h:link outcome="dashboard" styleClass="nav-link text-white">
+                                <i class="bi bi-speedometer2 me-2"></i> Tableau de bord
+                            </h:link>
+                        </li>
+                        <li class="nav-item">
+                            <h:link outcome="commandes" styleClass="nav-link text-white">
+                                <i class="bi bi-bag me-2"></i> Mes commandes
+                            </h:link>
+                        </li>
+                        <li class="nav-item">
+                            <h:link outcome="profile" styleClass="nav-link text-white">
+                                <i class="bi bi-person-circle me-2"></i>
+                                Mon profil
+                            </h:link>
+                        </li>
+                        <li class="nav-item">
+                            <h:link outcome="historique" styleClass="nav-link text-white">
+                                <i class="bi bi-clock-history me-2"></i> Historique
+                            </h:link>
+                        </li>
+                    </ul>
+
+                    <div class="mt-5 px-3">
+                        <h:form>
+                            <h:commandButton value="Déconnexion" action="#{loginBean.logout}"
+                                             styleClass="btn btn-outline-light w-100" />
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenu principal -->
+            <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Mon Profil</h1>
+                </div>
+                <div class="alert alert-success mb-4" role="alert">
+                    Bienvenue dans votre Profile, #{loginBean.utilisateur.prenom} !
+                </div>
+                <div class="row">
+                    <!-- Informations personnelles -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title mb-0">Informations Personnelles</h5>
+                            </div>
+                            <div class="card-body">
+                                <h:form id="infoForm">
+                                    <!-- Messages de succès et d'erreur -->
+                                    <h:messages for="infoForm" infoClass="alert alert-success" errorClass="alert alert-danger"
+                                                warnClass="alert alert-warning" fatalClass="alert alert-danger"
+                                                layout="table" style="width: 100%;" />
+
+                                    <div class="mb-3">
+                                        <label for="nom" class="form-label">Nom</label>
+                                        <h:inputText id="nom" value="#{loginBean.utilisateur.nom}"
+                                                     styleClass="form-control" required="true"
+                                                     requiredMessage="Le nom est obligatoire" />
+                                        <h:message for="nom" style="color: red; display: block; margin-top: 5px;" />
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="prenom" class="form-label">Prénom</label>
+                                        <h:inputText id="prenom" value="#{loginBean.utilisateur.prenom}"
+                                                     styleClass="form-control" required="true"
+                                                     requiredMessage="Le prénom est obligatoire" />
+                                        <h:message for="prenom" style="color: red; display: block; margin-top: 5px;" />
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <h:inputText id="email" value="#{loginBean.utilisateur.email}"
+                                                     styleClass="form-control" required="true"
+                                                     requiredMessage="L'email est obligatoire" />
+                                        <h:message for="email" style="color: red; display: block; margin-top: 5px;" />
+                                    </div>
+
+                                    <h:commandButton value="Mettre à jour" action="#{profilBean.updateInfo}"
+                                                     styleClass="btn btn-primary" />
+                                </h:form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mot de passe -->
+                    <div class="col-md-6">
+                        <!-- Changer mot de passe -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title mb-0">Changer de mot de passe</h5>
+                            </div>
+                            <div class="card-body">
+                                <h:form id="passwordForm">
+                                    <!-- Messages de succès et d'erreur -->
+                                    <h:messages for="passwordForm" infoClass="alert alert-success" errorClass="alert alert-danger"
+                                                warnClass="alert alert-warning" fatalClass="alert alert-danger"
+                                                layout="table" style="width: 100%;" />
+
+                                    <div class="mb-3">
+                                        <label for="oldPassword" class="form-label">Mot de passe actuel</label>
+                                        <h:inputSecret id="oldPassword" value="#{profilBean.oldPassword}"
+                                                       styleClass="form-control" required="true"
+                                                       requiredMessage="Le mot de passe actuel est obligatoire" />
+                                        <h:message for="oldPassword" style="color: red; display: block; margin-top: 5px;" />
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="newPassword" class="form-label">Nouveau mot de passe</label>
+                                        <h:inputSecret id="newPassword" value="#{profilBean.newPassword}"
+                                                       styleClass="form-control" required="true"
+                                                       requiredMessage="Le nouveau mot de passe est obligatoire" />
+                                        <h:message for="newPassword" style="color: red; display: block; margin-top: 5px;" />
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="confirmPassword" class="form-label">Confirmer le mot de passe</label>
+                                        <h:inputSecret id="confirmPassword" value="#{profilBean.confirmPassword}"
+                                                       styleClass="form-control" required="true"
+                                                       requiredMessage="La confirmation du mot de passe est obligatoire" />
+                                        <h:message for="confirmPassword" style="color: red; display: block; margin-top: 5px;" />
+                                    </div>
+
+                                    <h:commandButton value="Changer le mot de passe" action="#{profilBean.updatePassword}"
+                                                     styleClass="btn btn-primary" />
+                                </h:form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+</h:body>
+</html>

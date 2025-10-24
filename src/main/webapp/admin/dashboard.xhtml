@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>Dashboard Client</title>
+    <link href="Style.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+</h:head>
+
+<h:body class="bg-light">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Include the sidebar component -->
+            <ui:include src="sidebar.xhtml" />
+
+            <!-- Contenu principal -->
+            <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Tableau de Bord</h1>
+                </div>
+
+                <!-- Message de bienvenue -->
+                <div class="alert alert-success" role="alert">
+                    Bienvenue dans votre tableau de bord, #{loginBean.utilisateur.prenom} !
+                </div>
+
+                <!-- Résumé -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted mb-0">Commandes</h6>
+                                        <h3 class="mb-0">#{dashboardBean.nombreCommandes}</h3>
+                                    </div>
+                                    <div class="bg-primary bg-opacity-10 p-3 rounded">
+                                        <i class="bi bi-bag-check text-primary" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted mb-0">En cours</h6>
+                                        <h3 class="mb-0">#{dashboardBean.commandesEnCours}</h3>
+                                    </div>
+                                    <div class="bg-warning bg-opacity-10 p-3 rounded">
+                                        <i class="bi bi-truck text-warning" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted mb-0">Total dépensé</h6>
+                                        <h3 class="mb-0">#{dashboardBean.totalDepense} €</h3>
+                                    </div>
+                                    <div class="bg-success bg-opacity-10 p-3 rounded">
+                                        <i class="bi bi-currency-euro text-success" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section en deux colonnes -->
+                <div class="row mb-4">
+                    <!-- Bloc Dernières commandes -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title mb-0">Dernières commandes</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <h:dataTable value="#{dashboardBean.dernieresCommandes}" var="commande"
+                                                 styleClass="table table-hover mb-0"
+                                                 rendered="#{not empty dashboardBean.dernieresCommandes}">
+                                        <h:column>
+                                            <f:facet name="header">N° Commande</f:facet>
+                                            <span class="fw-bold">##{commande.numero}</span>
+                                        </h:column>
+                                        <h:column>
+                                            <f:facet name="header">Date</f:facet>
+                                            <h:outputText value="#{commande.date}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                                            </h:outputText>
+                                        </h:column>
+                                        <h:column>
+                                            <f:facet name="header">Montant</f:facet>
+                                            <span class="fw-bold">#{commande.montant} €</span>
+                                        </h:column>
+                                        <h:column>
+                                            <f:facet name="header">Statut</f:facet>
+                                            <span class="badge bg-#{commande.statut eq 'Livrée' ? 'success' : commande.statut eq 'En cours' ? 'warning' : 'info'}">
+                                                #{commande.statut}
+                                            </span>
+                                        </h:column>
+                                        <h:column>
+                                            <f:facet name="header">Actions</f:facet>
+                                            <h:link outcome="details-commande" styleClass="btn btn-sm btn-outline-primary">
+                                                <f:param name="id" value="#{commande.id}" />
+                                                <i class="bi bi-eye"></i> Détails
+                                            </h:link>
+                                        </h:column>
+                                    </h:dataTable>
+
+                                    <h:panelGroup rendered="#{empty dashboardBean.dernieresCommandes}">
+                                        <div class="text-center p-4">
+                                            <p class="text-muted">Vous n'avez pas encore de commandes.</p>
+                                            <h:link outcome="produits" styleClass="btn btn-primary">
+                                                <i class="bi bi-cart-plus me-2"></i> Découvrir nos produits
+                                            </h:link>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white text-center">
+                                <h:link outcome="commandes" styleClass="btn btn-link">Voir toutes mes commandes</h:link>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bloc Mon profil -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Mon profil</h5>
+                                <h:link outcome="profile" styleClass="btn btn-sm btn-outline-primary"
+                                        style="width: 100px;">
+                                    <i class="bi bi-pencil-square me-1"></i> Modifier
+                                </h:link>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Nom:</strong> #{loginBean.utilisateur.nom}</p>
+                                <p><strong>Prénom:</strong> #{loginBean.utilisateur.prenom}</p>
+                                <p><strong>Email:</strong> #{loginBean.utilisateur.email}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+</h:body>
+</html>

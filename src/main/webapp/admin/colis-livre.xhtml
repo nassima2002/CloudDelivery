@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="title">Colis Livrés - Admin Dashboard</ui:define>
+
+    <ui:define name="page-title">Colis Livrés</ui:define>
+
+    <ui:define name="content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Colis livrés</h1>
+        </div>
+
+        <!-- Colis List -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Liste des colis livrés</h2>
+                <div class="flex items-center gap-2">
+                    <h:form id="searchForm">
+                        <div class="search-container">
+                            <h:inputText id="searchQuery" value="#{colisLivresBean.searchQuery}" styleClass="form-control" style="width: 250px;" placeholder="Rechercher..." />
+                            <h:commandButton value="Rechercher" action="#{colisLivresBean.rechercher}" styleClass="btn btn-outline btn-sm">
+                                <i class="ri-search-line"></i>
+                                <f:ajax execute="searchQuery" render=":dataTableForm :paginationForm :paginationInfoForm" />
+                            </h:commandButton>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="table-container">
+                    <!-- Tableau des colis livrés -->
+                    <h:form id="dataTableForm">
+                        <h:dataTable value="#{colisLivresBean.listeColis}" var="colis"
+                                     styleClass="data-table"
+                                     headerClass="table-header"
+                                     rowClasses="table-row">
+
+                            <h:column>
+                                <f:facet name="header">Référence</f:facet>
+                                <h:outputText value="#{colis.numeroSuivi}" />
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Client</f:facet>
+                                <h:outputText value="#{colis.utilisateur.nom} #{colis.utilisateur.prenom}" />
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Livreur</f:facet>
+                                <h:outputText value="#{colis.livreur.nom} #{colis.livreur.prenom}" />
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Destination</f:facet>
+                                <h:outputText value="#{colis.adresseDestinataire.rue}, #{colis.adresseDestinataire.ville},
+                                #{colis.adresseDestinataire.codePostal}, #{colis.adresseDestinataire.pays}" />
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Date livraison</f:facet>
+                                <h:outputText value="#{colisLivresBean.formatDate(colis.dateLivraison)}" />
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Actions</f:facet>
+                                <div class="action-buttons">
+                                    <h:commandButton value="Voir" styleClass="action-button">
+                                        <f:ajax execute="@this" render=":detailsModal" listener="#{colisLivresBean.chargerColisAModifier(colis)}"
+                                                onevent="function(data) {
+                                                if (data.status === 'success') {
+                                                    document.getElementById('details-modal-overlay').classList.add('show');
+                                                }
+                                            }" />
+                                    </h:commandButton>
+
+                                    <h:commandButton value="Facture"
+                                                     styleClass="action-button action-pdf"
+                                                     title="Générer facture">
+                                    </h:commandButton>
+
+                                    <h:commandButton value="Historique"
+                                                     styleClass="action-button action-info">
+                                        <f:ajax render=":historyForm" listener="#{colisLivresBean.chargerHistorique(colis)}" onevent="function(data) { if (data.status === 'success') { document.getElementById('history-modal-overlay').classList.add('show'); } }" />
+                                    </h:commandButton>
+
+                                    <h:commandButton value="Archiver"
+                                                     action="#{colisLivresBean.archiverColis}"
+                                                     onclick="return confirm('Êtes-vous sûr de vouloir archiver ce colis?');"
+                                                     styleClass="action-button">
+                                        <f:setPropertyActionListener target="#{colisLivresBean.colisId}" value="#{colis.id}" />
+                                    </h:commandButton>
+                                </div>
+                            </h:column>
+                        </h:dataTable>
+                    </h:form>
+
+                    <!-- Pagination -->
+                    <ui:include src="/WEB-INF/includes/pagination.xhtml" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de détails du colis -->
+        <ui:include src="/WEB-INF/components/details-colis.xhtml" />
+
+        <!-- Modal d'historique du colis -->
+        <!-- <ui:include src="/WEB-INF/components/history-colis.xhtml" /> -->
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>Affectation des colis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</h:head>
+
+<h:body class="bg-gray-100 text-gray-800 p-10">
+    <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
+        <h2 class="text-2xl font-bold mb-6 text-center">Affecter un colis à un livreur indisponible</h2>
+
+        <h:form>
+            <table class="w-full table-auto border-collapse">
+                <thead>
+                <tr class="bg-gray-200">
+                    <th class="border px-4 py-2 text-left">Nom du livreur</th>
+                    <th class="border px-4 py-2 text-left">Prenom du livreur</th>
+
+                    <th class="border px-4 py-2 text-left">Affecter un colis</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ui:repeat value="#{livreurColisBean.livreursIndisponibles}" var="l">
+                    <tr class="bg-white even:bg-gray-50">
+                        <td class="border px-4 py-2">
+                            #{l.user.nom}
+                        </td>
+                        <td class="border px-4 py-2">
+                            #{l.user.prenom}
+                        </td>
+                        <td class="border px-4 py-2">
+                            <h:selectOneMenu value="#{livreurColisBean.idColisAffectation}" styleClass="border rounded px-2 py-1 w-56">
+                                <f:selectItem itemLabel="-- Choisir un colis --" itemValue="#{null}" />
+                                <f:selectItems value="#{livreurColisBean.colisNonAffectes}" var="c"
+                                               itemLabel="#{c.description}" itemValue="#{c.id}" />
+                            </h:selectOneMenu>
+
+                            <h:commandButton value="Affecter"
+                                             styleClass="ml-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded"
+                                             action="#{livreurColisBean.affecterColisAuLivreur}">
+                                <f:setPropertyActionListener value="#{l.id}" target="#{livreurColisBean.idLivreurSelectionne}" />
+                            </h:commandButton>
+                        </td>
+                    </tr>
+                </ui:repeat>
+                </tbody>
+            </table>
+        </h:form>
+    </div>
+</h:body>
+</html>

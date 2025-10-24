@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Génération du Bordereau</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</h:head>
+
+<h:body class="min-h-screen flex items-center justify-center bg-gray-100">
+
+    <h:form styleClass="bg-white p-8 rounded shadow-md w-full max-w-md">
+
+        <h1 class="text-2xl font-bold mb-6 text-center">Générer le bordereau d’expédition</h1>
+
+        <!-- Champ ID du colis -->
+        <h:outputLabel value="ID du colis :" for="numeroSuivi" styleClass="block text-gray-700 mb-2" />
+        <h:inputText id="numeroSuivi" value="#{bordereauBean.bordereau.colis.numeroSuivi}" styleClass="border rounded p-2 w-full mb-4" />
+
+        <!-- Bouton de génération -->
+        <h:commandButton value="Télécharger le bordereau PDF"
+                         action="#{bordereauBean.generateBordereau}"
+                         ajax="false"
+                         styleClass="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" />
+
+    </h:form>
+
+</h:body>
+</html>

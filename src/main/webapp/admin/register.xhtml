@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+    <title>Inscription</title>
+    <link href="Style.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</h:head>
+
+<h:body class="bg-light">
+    <div class="d-flex justify-content-center align-items-center min-vh-100">
+        <div class="card shadow-lg" style="max-width: 480px; width: 100%;">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <h1 class="card-title h3">Inscription</h1>
+                    <p class="card-text text-muted">Créer un nouveau compte</p>
+                </div>
+
+                <!-- Global error messages -->
+                <span style="color: red;">
+                    <h:messages id="messages" globalOnly="true" styleClass="alert alert-danger" />
+                </span>
+
+                <h:form>
+
+                    <!-- Nom -->
+                    <h:panelGroup>
+                        <label class="form-label" for="nom">Nom</label>
+                        <h:inputText id="nom" value="#{registerBean.utilisateur.nom}"
+                                     required="true"
+                                     requiredMessage="Le nom est obligatoire."
+                                     class="form-control"
+                                     placeholder="Nom">
+                        </h:inputText>
+                        <h:message for="nom" style="color:red"/>
+                    </h:panelGroup>
+
+                    <!-- Prénom -->
+                    <h:panelGroup>
+                        <label class="form-label" for="prenom">Prénom</label>
+                        <h:inputText id="prenom" value="#{registerBean.utilisateur.prenom}"
+                                     required="true"
+                                     requiredMessage="Le prénom est obligatoire."
+                                     class="form-control"
+                                     placeholder="Prénom">
+                        </h:inputText>
+                        <h:message for="prenom" style="color:red"/>
+                    </h:panelGroup>
+
+                    <!-- Email -->
+                    <h:panelGroup>
+                        <label class="form-label" for="email">Email</label>
+                        <h:inputText id="email" value="#{registerBean.utilisateur.email}"
+                                     required="true"
+                                     requiredMessage="L'email est obligatoire."
+                                     class="form-control"
+                                     placeholder="Email">
+                        </h:inputText>
+                        <h:message for="email" style="color:red"/>
+                    </h:panelGroup>
+
+                    <!-- Mot de passe -->
+                    <h:panelGroup>
+                        <label class="form-label" for="motDePasse">Mot de passe</label>
+                        <h:inputSecret id="motDePasse" value="#{registerBean.utilisateur.motDePasse}"
+                                       required="true"
+                                       requiredMessage="Le mot de passe est obligatoire."
+                                       class="form-control"
+                                       placeholder="Mot de passe">
+                        </h:inputSecret>
+                        <h:message for="motDePasse" style="color:red"/>
+                    </h:panelGroup>
+
+                    <!-- Le rôle par défaut est "CLIENT", pas besoin de champ de rôle -->
+                    <h:inputHidden id="role" value="CLIENT" />
+
+                    <!-- Bouton inscription -->
+                    <div class="d-grid mt-3">
+                        <h:commandButton value="S'inscrire" action="#{registerBean.register}"
+                                         class="btn btn-dark btn-lg" />
+                    </div>
+
+                </h:form>
+
+                <!-- Already have an account -->
+                <p class="text-center text-muted mt-4">
+                    Already have an account yet?
+                    <h:link value="Sign in" outcome="login.xhtml" class="text-decoration-none" />
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional: Bootstrap JS (for additional features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+</h:body>
+</html>
