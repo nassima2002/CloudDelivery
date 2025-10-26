@@ -5,220 +5,921 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
 <h:head>
-    <title>Gestion des Livreurs - Admin Dashboard</title>
-    <meta charset="UTF-8" />
+    <title>Admin Dashboard - Gestion des Livreurs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-50: #f0f9ff;
+            --primary-100: #e0f2fe;
+            --primary-200: #bae6fd;
+            --primary-300: #7dd3fc;
+            --primary-400: #38bdf8;
+            --primary-500: #0ea5e9;
+            --primary-600: #0284c7;
+            --primary-700: #0369a1;
+            --primary-800: #075985;
+            --primary-900: #0c4a6e;
+
+            --sidebar-width: 16rem;
+            --sidebar-width-collapsed: 4rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+        }
+
+        /* Layout */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: white;
+            border-right: 1px solid #e5e7eb;
+            transition: width 0.3s ease;
+            position: fixed;
+            z-index: 50;
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-width-collapsed);
+        }
+
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-600);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+        }
+
+        .sidebar-toggle:hover {
+            background-color: #f3f4f6;
+        }
+
+        .sidebar-content {
+            padding: 1rem 0;
+        }
+
+        .sidebar-group {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-group-label {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu-item {
+            position: relative;
+        }
+
+        .sidebar-menu-button {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: #4b5563;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            gap: 0.75rem;
+        }
+
+        .sidebar-menu-button:hover {
+            background-color: #f3f4f6;
+            color: var(--primary-600);
+        }
+
+        .sidebar-menu-button.active {
+            background-color: var(--primary-50);
+            color: var(--primary-700);
+            border-left: 3px solid var(--primary-600);
+        }
+
+        .sidebar-menu-button i {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar-menu-button-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar.collapsed .sidebar-menu-button-text,
+        .sidebar.collapsed .sidebar-group-label {
+            display: none;
+        }
+
+        .sidebar.collapsed .sidebar-logo-text {
+            display: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: var(--sidebar-width-collapsed);
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0 1rem;
+            height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-left: 1rem;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Content */
+        .content {
+            padding: 1.5rem;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #111a27;
+        }
+
+        .card-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-100);
+            color: var(--primary-600);
+            border-radius: 0.375rem;
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        .data-table {
+            min-width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background-color: #f9fafb;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+
+        .data-table tr:hover {
+            background-color: #f9fafb;
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-delivered {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-transit {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 0.5rem);
+            width: 12rem;
+            background-color: white;
+            border-radius: 0.375rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 50;
+            overflow: hidden;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dropdown-header-name {
+            font-weight: 500;
+            color: #111827;
+        }
+
+        .dropdown-header-email {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        .dropdown-item i {
+            margin-right: 0.5rem;
+        }
+
+        /* Action Button */
+        .action-button {
+            color: var(--primary-600);
+            background: none;
+            border: none;
+            font-size: 0.875rem;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .action-button:hover {
+            background-color: var(--primary-50);
+        }
+
+        /* Custom styles for the Livreurs page */
+        .custom-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title {
+            margin-bottom: 1.5rem;
+        }
+
+        .disponible {
+            color: #065f46;
+        }
+
+        .non-disponible {
+            color: #b91c1c;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .modal-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-body {
+            padding: 1rem;
+        }
+
+        .btn-close {
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            line-height: 1;
+            color: #6b7280;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 50;
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
+            }
+
+            .mobile-sidebar-toggle {
+                display: block;
+            }
+
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 40;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
 </h:head>
 
-<h:body class="bg-gray-50 font-sans">
-
-    <!-- Sidebar -->
-    <aside class="w-64 h-screen bg-white border-r border-gray-200 fixed top-0 left-0 flex flex-col">
-        <!-- Logo -->
-        <div class="px-6 py-5 border-b border-gray-200">
-            <h1 class="text-xl font-semibold text-blue-600">Espace Admin</h1>
-        </div>
-
-        <!-- Navigation -->
-        <nav class="flex-1 px-4 py-6 space-y-1">
-            <h:link outcome="admin-dashboard"
-                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
-                <i class="ri-dashboard-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
-                <span class="text-sm font-medium">Tableau de bord</span>
-            </h:link>
-
-            <h:link outcome="colis"
-                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
-                <i class="ri-box-3-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
-                <span class="text-sm font-medium">Mes colis</span>
-            </h:link>
-
-            <h:link outcome="admin-livreurs"
-                    styleClass="flex items-center px-4 py-2.5 bg-blue-50 text-blue-600 rounded-lg">
-                <i class="ri-user-star-line text-xl mr-3"></i>
-                <span class="text-sm font-medium">Livreurs</span>
-            </h:link>
-
-            <h:link outcome="admin-clients"
-                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
-                <i class="ri-group-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
-                <span class="text-sm font-medium">Clients</span>
-            </h:link>
-
-            <h:link outcome="historique"
-                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
-                <i class="ri-time-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
-                <span class="text-sm font-medium">Historique</span>
-            </h:link>
-        </nav>
-
-        <!-- Profil admin -->
-        <div class="border-t border-gray-200 p-4">
-            <div class="bg-gray-50 rounded-lg p-4">
-                <div class="flex items-center mb-3">
-                    <div class="bg-blue-100 rounded-full w-10 h-10 flex items-center justify-center mr-3">
-                        <i class="ri-user-line text-blue-600 text-xl"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-semibold text-gray-800 truncate">Admin User</p>
-                        <p class="text-xs text-gray-500">Administrateur</p>
-                    </div>
+<h:body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="ri-box-3-fill"></i>
+                    <span class="sidebar-logo-text">Admin Panel</span>
+                </div>
+                <button type="button" class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle Sidebar">
+                    <i class="ri-arrow-left-s-line"></i>
+                </button>
+            </div>
+            <div class="sidebar-content">
+                <div class="sidebar-group">
+                    <div class="sidebar-group-label">Dashboard</div>
+                    <ul class="sidebar-menu">
+                        <li class="sidebar-menu-item">
+                            <h:link outcome="admin-dashboard" styleClass="sidebar-menu-button">
+                                <i class="ri-dashboard-line"></i>
+                                <span class="sidebar-menu-button-text">Tableau de bord</span>
+                            </h:link>
+                        </li>
+                    </ul>
                 </div>
 
-                <div class="space-y-2">
-                    <div class="flex items-center text-xs text-gray-600">
-                        <i class="ri-mail-line mr-2"></i>
-                        <span class="truncate">admin@example.com</span>
-                    </div>
+                <div class="sidebar-group">
+                    <div class="sidebar-group-label">Gestion des colis</div>
+                    <ul class="sidebar-menu">
+                        <li class="sidebar-menu-item">
+                            <h:link outcome="colis" styleClass="sidebar-menu-button">
+                                <i class="ri-box-3-line"></i>
+                                <span class="sidebar-menu-button-text">Tous les colis</span>
+                            </h:link>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <h:link outcome="admin-colis-en-attente" styleClass="sidebar-menu-button">
+                                <i class="ri-time-line"></i>
+                                <span class="sidebar-menu-button-text">En attente</span>
+                            </h:link>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <h:link outcome="admin-colis-en-transit" styleClass="sidebar-menu-button">
+                                <i class="ri-truck-line"></i>
+                                <span class="sidebar-menu-button-text">En transit</span>
+                            </h:link>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <h:link outcome="admin-colis-livres" styleClass="sidebar-menu-button">
+                                <i class="ri-check-double-line"></i>
+                                <span class="sidebar-menu-button-text">Livrés</span>
+                            </h:link>
+                        </li>
+                    </ul>
                 </div>
 
-                <h:link outcome="profil" styleClass="w-full mt-3 flex items-center justify-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition">
-                    <i class="ri-user-settings-line mr-2"></i>
-                    Mon profil
-                </h:link>
-
-                <h:form styleClass="mt-2">
-                    <h:commandLink action="#{loginBean.logout}" styleClass="w-full flex items-center justify-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition">
-                        <i class="ri-logout-box-line mr-2"></i>
-                        Déconnexion
-                    </h:commandLink>
-                </h:form>
-            </div>
-        </div>
-    </aside>
-
-    <!-- Contenu principal -->
-    <main class="ml-64 p-8">
-
-        <!-- Header -->
-        <header class="mb-6">
-            <div class="flex justify-between items-center mb-4">
-                <div>
-                    <h1 class="text-2xl font-semibold text-gray-800">Gestion des Livreurs</h1>
-                    <p class="text-sm text-gray-500 mt-1">Gérez tous les livreurs de votre plateforme</p>
+                <div class="sidebar-group">
+                    <div class="sidebar-group-label">Gestion des livreurs</div>
+                    <ul class="sidebar-menu">
+                        <li class="sidebar-menu-item">
+                            <h:link outcome="admin-livreurs" styleClass="sidebar-menu-button active">
+                                <i class="ri-user-star-line"></i>
+                                <span class="sidebar-menu-button-text">Tous les livreurs</span>
+                            </h:link>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <h:link outcome="admin-livreurs-disponibles" styleClass="sidebar-menu-button">
+                                <i class="ri-user-follow-line"></i>
+                                <span class="sidebar-menu-button-text">Disponibles</span>
+                            </h:link>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <h:link outcome="admin-livreurs-en-mission" styleClass="sidebar-menu-button">
+                                <i class="ri-user-location-line"></i>
+                                <span class="sidebar-menu-button-text">En mission</span>
+                            </h:link>
+                        </li>
+                    </ul>
                 </div>
 
-                <!-- ✅ BOUTON CORRIGÉ : styleClass au lieu de class -->
-                <h:link outcome="Livreur" styleClass="bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition flex items-center text-sm font-medium">
-                    <i class="ri-add-line mr-2"></i> Ajouter un livreur
-                </h:link>
+                <div class="sidebar-group">
+                    <div class="sidebar-group-label">Administration</div>
+                    <ul class="sidebar-menu">
+                        <li class="sidebar-menu-item">
+                            <h:link outcome="admin-clients" styleClass="sidebar-menu-button">
+                                <i class="ri-user-line"></i>
+                                <span class="sidebar-menu-button-text">Clients</span>
+                            </h:link>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <h:link outcome="admin-rapports" styleClass="sidebar-menu-button">
+                                <i class="ri-file-chart-line"></i>
+                                <span class="sidebar-menu-button-text">Rapports</span>
+                            </h:link>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <h:link outcome="admin-parametres" styleClass="sidebar-menu-button">
+                                <i class="ri-settings-line"></i>
+                                <span class="sidebar-menu-button-text">Paramètres</span>
+                            </h:link>
+                        </li>
+                    </ul>
+                </div>
             </div>
+        </aside>
 
-            <!-- Message de bienvenue -->
-            <div class="bg-emerald-50 border-l-4 border-emerald-400 p-4 rounded flex items-start">
-                <i class="ri-checkbox-circle-line text-emerald-500 text-xl mr-3 mt-0.5"></i>
-                <p class="text-emerald-800 text-sm">Bienvenue dans votre tableau de bord, Admin !</p>
-            </div>
-        </header>
+        <!-- Sidebar Overlay (for mobile) -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-        <!-- Card principale -->
-        <div class="bg-white rounded-lg border border-gray-200">
+        <!-- Main Content -->
+        <main class="main-content" id="main-content">
+            <!-- Navbar -->
+            <nav class="navbar">
+                <div class="navbar-left">
+                    <button type="button" class="sidebar-toggle" id="mobile-sidebar-toggle" aria-label="Toggle Mobile Sidebar">
+                        <i class="ri-menu-line"></i>
+                    </button>
+                    <h1 class="navbar-title">Gestion des Livreurs</h1>
+                </div>
+                <div class="navbar-right">
+                    <!-- Notifications -->
+                    <button type="button" class="sidebar-toggle">
+                        <i class="ri-notification-3-line"></i>
+                    </button>
 
-            <!-- Tableau des livreurs -->
-            <div class="p-6">
-                <h:form id="livreursTableForm">
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                            <tr class="border-b border-gray-200">
-                                <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">ID</th>
-                                <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Nom complet</th>
-                                <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Email</th>
-                                <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Téléphone</th>
-                                <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Disponibilité</th>
-                                <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Colis assignés</th>
-                                <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <ui:repeat value="#{livreurBean.livreurs}" var="livreur">
-                                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                    <!-- ID -->
-                                    <td class="py-3 px-4 text-sm text-gray-800 font-mono">
-                                        #<h:outputText value="#{livreur.id}" />
-                                    </td>
+                    <!-- Profile dropdown -->
+                    <div class="dropdown">
+                        <button type="button" class="flex items-center focus:outline-none" id="user-menu-button">
+                            <div class="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                                <i class="ri-user-fill text-primary-600"></i>
+                            </div>
+                        </button>
 
-                                    <!-- Nom complet -->
-                                    <td class="py-3 px-4">
-                                        <div class="flex items-center">
-                                            <div class="bg-blue-100 rounded-full w-10 h-10 flex items-center justify-center mr-3">
-                                                <i class="ri-user-line text-blue-600"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-sm font-medium text-gray-800">
-                                                    <h:outputText value="#{livreur.user.nom} #{livreur.user.prenom}" />
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    <!-- Email -->
-                                    <td class="py-3 px-4 text-sm text-gray-600">
-                                        <div class="flex items-center">
-                                            <i class="ri-mail-line mr-2 text-gray-400"></i>
-                                            <h:outputText value="#{livreur.user.email}" />
-                                        </div>
-                                    </td>
-
-                                    <!-- Téléphone -->
-                                    <td class="py-3 px-4 text-sm text-gray-600">
-                                        <div class="flex items-center">
-                                            <i class="ri-phone-line mr-2 text-gray-400"></i>
-                                            <h:outputText value="#{livreur.user.telephone}" />
-                                        </div>
-                                    </td>
-
-                                    <!-- Disponibilité -->
-                                    <td class="py-3 px-4">
-                                        <h:outputText value="Disponible"
-                                                      styleClass="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
-                                                      rendered="#{livreur.disponibiliter eq 'DISPONIBLE'}" />
-                                        <h:outputText value="En mission"
-                                                      styleClass="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800"
-                                                      rendered="#{livreur.disponibiliter eq 'EN_MISSION'}" />
-                                        <h:outputText value="Indisponible"
-                                                      styleClass="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-                                                      rendered="#{livreur.disponibiliter eq 'INDISPONIBLE'}" />
-                                    </td>
-
-                                    <!-- Colis assignés -->
-                                    <td class="py-3 px-4 text-sm text-gray-800 text-center">
-                                        <span class="bg-blue-50 text-blue-600 px-2 py-1 rounded font-medium">
-                                            <h:outputText value="#{livreur.nombreColisAssignes}" />
-                                        </span>
-                                    </td>
-
-                                    <!-- Actions -->
-                                    <td class="py-3 px-4">
-                                        <div class="flex items-center space-x-2">
-
-                                            <!-- Modifier - Redirige vers livreur.xhtml -->
-                                            <h:link outcome="livreur" styleClass="text-gray-600 hover:text-gray-700 text-xs font-medium px-2 py-1 hover:bg-gray-50 rounded transition">
-                                                <f:param name="id" value="#{livreur.id}" />
-                                                Modifier
-                                            </h:link>
-
-                                            <!-- Supprimer -->
-                                            <h:commandButton value="Supprimer"
-                                                             action="#{livreurBean.supprimerLivreur(livreur.id)}"
-                                                             onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livreur ?');"
-                                                             styleClass="text-red-600 hover:text-red-700 text-xs font-medium px-2 py-1 hover:bg-red-50 rounded transition">
-                                                <f:ajax execute="@this" render="@form" />
-                                            </h:commandButton>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </ui:repeat>
-                            </tbody>
-                        </table>
+                        <!-- Dropdown menu -->
+                        <div class="dropdown-menu" id="user-dropdown">
+                            <div class="dropdown-header">
+                                <div class="dropdown-header-name">Admin User</div>
+                                <div class="dropdown-header-email">admin@example.com</div>
+                            </div>
+                            <h:link outcome="admin-profile" styleClass="dropdown-item">
+                                <i class="ri-user-settings-line"></i> Mon profil
+                            </h:link>
+                            <h:form>
+                                <h:commandLink action="#{loginBean.logout}" styleClass="dropdown-item">
+                                    <i class="ri-logout-box-line"></i> Déconnexion
+                                </h:commandLink>
+                            </h:form>
+                        </div>
                     </div>
-                </h:form>
+                </div>
+            </nav>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Alert de bienvenue -->
+                <div class="alert alert-success" role="alert">
+                    Bienvenue dans la gestion des livreurs, #{loginBean.utilisateur.prenom} !
+                </div>
+
+                <!-- Section Livreurs -->
+                <div class="custom-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5><i class="bi bi-people me-2"></i>Liste des Livreurs</h5>
+                        <button class="btn btn-success btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#formulaireAjout">
+                            <i class="bi bi-plus-circle"></i> Ajouter
+                        </button>
+                    </div>
+
+                    <!-- Formulaire d'ajout -->
+                    <div class="collapse mb-4" id="formulaireAjout">
+                        <div class="card card-body shadow-sm">
+                            <h:form id="formAjout">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Nom</label>
+                                        <h:inputText value="#{livreurBean.nouveauLivreur.user.nom}" styleClass="form-control" required="true" />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Prénom</label>
+                                        <h:inputText value="#{livreurBean.nouveauLivreur.user.prenom}" styleClass="form-control" required="true" />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Email</label>
+                                        <h:inputText value="#{livreurBean.nouveauLivreur.user.email}" styleClass="form-control" required="true" />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Disponibilité</label>
+                                        <h:selectOneMenu value="#{livreurBean.nouveauLivreur.disponibiliter}" styleClass="form-select" required="true">
+                                            <f:selectItem itemLabel="Oui" itemValue="oui" />
+                                            <f:selectItem itemLabel="Non" itemValue="non" />
+                                        </h:selectOneMenu>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-secondary me-2" data-bs-toggle="collapse" data-bs-target="#formulaireAjout">Annuler</button>
+                                    <h:commandButton value="Ajouter" action="#{livreurBean.ajouterLivreur}" styleClass="btn btn-primary" />
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+
+                    <!-- Messages -->
+                    <h:messages id="messages" styleClass="alert alert-info" globalOnly="true" />
+
+                    <!-- Tableau des livreurs -->
+                    <div class="table-responsive">
+                        <h:dataTable id="livreursTable" value="#{livreurBean.livreurs}" var="livreur" styleClass="table table-striped table-hover align-middle">
+                            <h:column>
+                                <f:facet name="header">ID</f:facet>
+                                #{livreur.id}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Nom</f:facet>
+                                #{livreur.user.nom}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Prénom</f:facet>
+                                #{livreur.user.prenom}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Email</f:facet>
+                                <i class="bi bi-envelope me-1 text-secondary"></i> #{livreur.user.email}
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Disponibilité</f:facet>
+                                <h:panelGroup rendered="#{livreur.disponibiliter eq 'oui'}">
+                                    <i class="bi bi-check-circle-fill me-1 disponible"></i>
+                                    <span class="disponible">Disponible</span>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{livreur.disponibiliter eq 'non'}">
+                                    <i class="bi bi-x-circle-fill me-1 non-disponible"></i>
+                                    <span class="non-disponible">Non disponible</span>
+                                </h:panelGroup>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Actions</f:facet>
+                                <div class="d-flex gap-2">
+                                    <h:form style="display:inline;">
+                                        <h:commandButton value="Modifier" styleClass="btn btn-sm btn-outline-warning"
+                                                         action="#{livreurBean.preparerModification(livreur)}">
+                                            <f:ajax execute="@this" render=":formModification" onevent="handleModalOpen" />
+                                        </h:commandButton>
+                                    </h:form>
+
+                                    <h:form style="display:inline;">
+                                        <h:commandButton action="#{livreurBean.supprimerLivreur(livreur.id)}"
+                                                         styleClass="btn btn-sm btn-outline-danger"
+                                                         value="Supprimer"
+                                                         onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livreur ?');">
+                                        </h:commandButton>
+                                    </h:form>
+                                </div>
+                            </h:column>
+                        </h:dataTable>
+                    </div>
+                </div>
             </div>
+        </main>
+    </div>
+
+    <!-- Modal pour la modification -->
+    <!-- Modal pour la modification -->
+    <div id="modalModification" class="modal">
+        <div class="modal-content">
+            <h:form id="formModification">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifier le livreur</h5>
+                    <button type="button" class="btn-close" onclick="fermerModal(); return false;"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Ajouter des ID pour faciliter le débogage -->
+                    <h:inputHidden id="idLivreur" value="#{livreurBean.livreurModifie.id}" />
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nom</label>
+                            <h:inputText id="nomLivreur" value="#{livreurBean.livreurModifie.user.nom}"
+                                         styleClass="form-control" required="true" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Prénom</label>
+                            <h:inputText id="prenomLivreur" value="#{livreurBean.livreurModifie.user.prenom}"
+                                         styleClass="form-control" required="true" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <h:inputText id="emailLivreur" value="#{livreurBean.livreurModifie.user.email}"
+                                         styleClass="form-control" required="true" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Disponibilité</label>
+                            <h:selectOneMenu id="disponibiliteLivreur" value="#{livreurBean.livreurModifie.disponibiliter}"
+                                             styleClass="form-select" required="true">
+                                <f:selectItem itemLabel="Oui" itemValue="oui" />
+                                <f:selectItem itemLabel="Non" itemValue="non" />
+                            </h:selectOneMenu>
+                        </div>
+                    </div>
+                    <div class="text-end mt-3">
+                        <button type="button" class="btn btn-secondary me-2" onclick="fermerModal(); return false;">Annuler</button>
+                        <h:commandButton value="Enregistrer" action="#{livreurBean.modifierLivreur}"
+                                         styleClass="btn btn-warning" onclick="fermerModal();">
+                            <f:ajax execute="@form" render=":livreursTable @form :messages" onevent="handleUpdate" />
+                        </h:commandButton>
+                    </div>
+                </div>
+            </h:form>
         </div>
+    </div>
 
-    </main>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
 
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar toggle
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+
+            if (sidebarToggle &amp;&amp; sidebar &amp;&amp; mainContent) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    mainContent.classList.toggle('expanded');
+                });
+            }
+
+            // Mobile sidebar toggle
+            const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            if (mobileSidebarToggle &amp;&amp; sidebar &amp;&amp; sidebarOverlay) {
+                mobileSidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('mobile-open');
+                    sidebarOverlay.classList.toggle('active');
+                });
+
+                sidebarOverlay.addEventListener('click', function() {
+                    sidebar.classList.remove('mobile-open');
+                    sidebarOverlay.classList.remove('active');
+                });
+            }
+
+            // User dropdown toggle
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userDropdown = document.getElementById('user-dropdown');
+
+            if (userMenuButton &amp;&amp; userDropdown) {
+                userMenuButton.addEventListener('click', function(event) {
+                    // Prevent event propagation
+                    event.stopPropagation();
+
+                    // Toggle dropdown visibility
+                    userDropdown.classList.toggle('show');
+                });
+
+                // Close dropdown when clicking elsewhere
+                document.addEventListener('click', function(event) {
+                    if (!userMenuButton.contains(event.target) &amp;&amp; !userDropdown.contains(event.target)) {
+                        userDropdown.classList.remove('show');
+                    }
+                });
+            }
+
+            console.log('Script initialized');
+            console.log('User menu button:', userMenuButton);
+            console.log('User dropdown:', userDropdown);
+        });
+
+        // Fonction pour ouvrir le modal après réception des données AJAX
+        function handleModalOpen(data) {
+            if (data.status === "success") {
+                console.log("Requête AJAX envoyée avec succès");
+            } else if (data.status === "complete") {
+                console.log("Traitement AJAX terminé, ouverture du modal...");
+                // Utilisez un délai pour s'assurer que le DOM a été mis à jour
+                setTimeout(function() {
+                    ouvrirModalModification();
+                }, 300);
+            }
+        }
+
+        // Fonction pour gérer la mise à jour
+        function handleUpdate(data) {
+            if (data.status === "complete") {
+                console.log("Mise à jour terminée");
+            }
+        }
+
+        // Fonction pour ouvrir le modal et s'assurer que l'AJAX est completé
+        function ouvrirModalModification() {
+            document.getElementById('modalModification').style.display = 'block';
+            console.log("Modal ouvert");
+
+            // Log des données pour débogage
+            try {
+                console.log("ID: " + document.querySelector("#formModification\\:idLivreur").value);
+                console.log("Nom: " + document.querySelector("#formModification\\:nomLivreur").value);
+                console.log("Prénom: " + document.querySelector("#formModification\\:prenomLivreur").value);
+                console.log("Email: " + document.querySelector("#formModification\\:emailLivreur").value);
+                console.log("Disponibilité: " + document.querySelector("#formModification\\:disponibiliteLivreur").value);
+            } catch(e) {
+                console.error("Erreur lors du log des données:", e);
+            }
+        }
+
+        // Fonction pour fermer le modal
+        function fermerModal() {
+            document.getElementById('modalModification').style.display = 'none';
+        }
+
+        // Fermer le modal en cliquant à l'extérieur
+        window.onclick = function(event) {
+            var modal = document.getElementById('modalModification');
+            if (event.target === modal) {
+                fermerModal();
+            }
+        }
+    </script>
 </h:body>
 </html>
