@@ -1,69 +1,87 @@
-<!DOCTYPE html>
-<html
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:h="http://xmlns.jcp.org/jsf/html"
-        xmlns:f="http://java.sun.com/jsf/core"
-        xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<!-- resources/includes/sidebar.xhtml -->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <!-- Sidebar -->
-    <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse" style="min-height: 100vh;">
-        <div class="position-sticky pt-3">
-            <div class="text-center mb-4 p-3">
-                <h5 class="text-white">Espace Admin</h5>
-                <div class="text-center bg-secondary bg-opacity-25 rounded p-3">
-                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
-                         style="width: 60px; height: 60px;">
-                        <i class="bi bi-person-fill text-dark" style="font-size: 2rem;"></i>
+    <aside class="w-64 h-screen bg-white border-r border-gray-200 fixed top-0 left-0 flex flex-col">
+        <!-- Logo -->
+        <div class="px-6 py-5 border-b border-gray-200">
+            <h1 class="text-xl font-semibold text-blue-600">Espace Admin</h1>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-6 space-y-1">
+            <h:link outcome="admin-dashboard"
+                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-dashboard-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Tableau de bord</span>
+            </h:link>
+
+            <h:link outcome="colis"
+                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-box-3-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Mes colis</span>
+            </h:link>
+
+            <h:link outcome="admin-livreurs"
+                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-user-star-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Livreurs</span>
+            </h:link>
+
+            <h:link outcome="admin-clients"
+                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-group-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Clients</span>
+            </h:link>
+
+            <h:link outcome="historique"
+                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-time-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Historique</span>
+            </h:link>
+        </nav>
+
+        <!-- Profil admin (footer) -->
+        <div class="border-t border-gray-200 p-4">
+            <div class="bg-gray-50 rounded-lg p-4">
+                <div class="flex items-center mb-3">
+                    <div class="bg-blue-100 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                        <i class="ri-user-line text-blue-600 text-xl"></i>
                     </div>
-                    <div class="text-white fw-bold">
-                        #{loginBean.utilisateur.prenom} #{loginBean.utilisateur.nom}
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-gray-800 truncate">Admin</p>
+                        <p class="text-xs text-gray-500">Administrateur</p>
                     </div>
                 </div>
-            </div>
 
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <h:link outcome="dashboard" styleClass="nav-link active text-white">
-                        <i class="bi bi-speedometer2 me-2"></i> Tableau de bord
-                    </h:link>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white">
-                        <i class="bi bi-bag me-2"></i> Livreurs
-                    </a>
-                    <ul class="nav flex-column ms-3">
-                        <li class="nav-item">
-                            <h:link outcome="historique" styleClass="nav-link text-white">
-                                <i class="bi bi-list me-2"></i> Liste des livreurs
-                            </h:link>
-                        </li>
-                        <li class="nav-item">
-                            <h:link outcome="commandes" styleClass="nav-link text-white">
-                                <i class="bi bi-plus-circle me-2"></i> Insertion livreur
-                            </h:link>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <h:link outcome="profile" styleClass="nav-link text-white">
-                        <i class="bi bi-person-circle me-2"></i>
-                        Mon profil
-                    </h:link>
-                </li>
-                <li class="nav-item">
-                    <h:link outcome="historique" styleClass="nav-link text-white">
-                        <i class="bi bi-clock-history me-2"></i> Colis
-                    </h:link>
-                </li>
-            </ul>
+                <div class="space-y-2">
+                    <div class="flex items-center text-xs text-gray-600">
+                        <i class="ri-mail-line mr-2"></i>
+                        <span class="truncate">admin@deliveryms.ma</span>
+                    </div>
+                    <div class="flex items-center text-xs text-gray-600">
+                        <i class="ri-user-settings-line mr-2"></i>
+                        <span>Compte créé le</span>
+                    </div>
+                    <div class="text-xs text-gray-600">
+                        <span>01/01/2025 10:00</span>
+                    </div>
+                </div>
 
-            <div class="mt-5 px-3">
-                <h:form>
-                    <h:commandButton value="Déconnexion" action="#{loginBean.logout}"
-                                     styleClass="btn btn-outline-light w-100" />
+                <button class="w-full mt-3 flex items-center justify-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition">
+                    <i class="ri-edit-line mr-2"></i>
+                    Modifier
+                </button>
+                <h:form styleClass="mt-2">
+                    <h:commandLink action="#{loginBean.logout}" styleClass="w-full flex items-center justify-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition">
+                        <i class="ri-logout-box-line mr-2"></i>
+                        Déconnexion
+                    </h:commandLink>
                 </h:form>
             </div>
         </div>
-    </div>
+    </aside>
 
-</html>
+</ui:composition>

@@ -1,90 +1,192 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
-<h:head>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:form id="editForm">
+        <div class="modal-overlay" id="edit-modal-overlay" style="display: none;">
+            <div class="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4 shadow-xl">
+
+                <!-- Header -->
+                <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-lg z-10">
+                    <h3 class="text-lg font-semibold text-gray-800">Modifier le colis</h3>
+                    <button type="button" class="text-gray-400 hover:text-gray-600 transition" id="close-edit-modal-btn" onclick="closeEditModal()">
+                        <i class="ri-close-line text-2xl"></i>
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="p-6 space-y-4">
+
+                    <!-- Référence (lecture seule) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Référence
+                        </label>
+                        <div class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 font-mono">
+                            <h:outputText value="#{colisBean.numeroSuivi}" />
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label for="edit-description" class="block text-sm font-medium text-gray-700 mb-1">
+                            Description <span class="text-red-500">*</span>
+                        </label>
+                        <h:inputTextarea id="edit-description"
+                                         value="#{colisBean.description}"
+                                         styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                         rows="3"
+                                         required="true"
+                                         requiredMessage="La description est obligatoire" />
+                        <h:message for="edit-description" styleClass="text-red-500 text-xs mt-1" />
+                    </div>
+
+                    <!-- Poids -->
+                    <div>
+                        <label for="edit-poids" class="block text-sm font-medium text-gray-700 mb-1">
+                            Poids (kg) <span class="text-red-500">*</span>
+                        </label>
+                        <h:inputText id="edit-poids"
+                                     value="#{colisBean.poids}"
+                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                     placeholder="0.0"
+                                     required="true"
+                                     requiredMessage="Le poids est obligatoire">
+                            <f:convertNumber pattern="#0.00" />
+                        </h:inputText>
+                        <h:message for="edit-poids" styleClass="text-red-500 text-xs mt-1" />
+                    </div>
+
+                    <!-- Statut -->
+                    <div>
+                        <label for="edit-status" class="block text-sm font-medium text-gray-700 mb-1">
+                            Statut <span class="text-red-500">*</span>
+                        </label>
+                        <h:selectOneMenu id="edit-status"
+                                         value="#{colisBean.status}"
+                                         styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                         required="true"
+                                         requiredMessage="Le statut est obligatoire">
+                            <f:selectItem itemValue="" itemLabel="-- Sélectionnez un statut --" />
+                            <f:selectItem itemValue="EN_ATTENTE" itemLabel="En attente" />
+                            <f:selectItem itemValue="EN_TRANSIT" itemLabel="En transit" />
+                            <f:selectItem itemValue="LIVRE" itemLabel="Livré" />
+                            <f:selectItem itemValue="RETOURNE" itemLabel="Retourné" />
+                            <f:selectItem itemValue="ANNULE" itemLabel="Annulé" />
+                        </h:selectOneMenu>
+                        <h:message for="edit-status" styleClass="text-red-500 text-xs mt-1" />
+                    </div>
+
+                    <!-- Séparateur -->
+                    <div class="border-t border-gray-200 pt-4">
+                        <h4 class="text-sm font-semibold text-gray-700 mb-3">Adresse de livraison</h4>
+                    </div>
+
+                    <!-- Rue -->
+                    <div>
+                        <label for="edit-rue" class="block text-sm font-medium text-gray-700 mb-1">
+                            Rue <span class="text-red-500">*</span>
+                        </label>
+                        <h:inputText id="edit-rue"
+                                     value="#{colisBean.rue}"
+                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                     required="true"
+                                     requiredMessage="La rue est obligatoire" />
+                        <h:message for="edit-rue" styleClass="text-red-500 text-xs mt-1" />
+                    </div>
+
+                    <!-- Ville et Code postal -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="edit-ville" class="block text-sm font-medium text-gray-700 mb-1">
+                                Ville <span class="text-red-500">*</span>
+                            </label>
+                            <h:inputText id="edit-ville"
+                                         value="#{colisBean.ville}"
+                                         styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                         required="true"
+                                         requiredMessage="La ville est obligatoire" />
+                            <h:message for="edit-ville" styleClass="text-red-500 text-xs mt-1" />
+                        </div>
+                        <div>
+                            <label for="edit-codePostal" class="block text-sm font-medium text-gray-700 mb-1">
+                                Code postal <span class="text-red-500">*</span>
+                            </label>
+                            <h:inputText id="edit-codePostal"
+                                         value="#{colisBean.codePostal}"
+                                         styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                         required="true"
+                                         requiredMessage="Le code postal est obligatoire" />
+                            <h:message for="edit-codePostal" styleClass="text-red-500 text-xs mt-1" />
+                        </div>
+                    </div>
+
+                    <!-- Pays -->
+                    <div>
+                        <label for="edit-pays" class="block text-sm font-medium text-gray-700 mb-1">
+                            Pays <span class="text-red-500">*</span>
+                        </label>
+                        <h:inputText id="edit-pays"
+                                     value="#{colisBean.pays}"
+                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                     required="true"
+                                     requiredMessage="Le pays est obligatoire" />
+                        <h:message for="edit-pays" styleClass="text-red-500 text-xs mt-1" />
+                    </div>
+
+                </div>
+
+                <!-- Footer -->
+                <div class="sticky bottom-0 bg-gray-50 px-6 py-4 flex justify-end space-x-3 border-t border-gray-200 rounded-b-lg">
+                    <button type="button"
+                            id="cancel-edit-modal-btn"
+                            onclick="closeEditModal()"
+                            class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium">
+                        Annuler
+                    </button>
+                    <h:commandButton value="Enregistrer les modifications"
+                                     action="#{colisBean.modifierColis}"
+                                     styleClass="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">
+                        <f:ajax execute="@form"
+                                render="@form :dataTableForm"
+                                onevent="function(data) { if (data.status === 'success') { closeEditModal(); } }" />
+                    </h:commandButton>
+                </div>
+
+            </div>
+        </div>
+    </h:form>
+
     <script type="text/javascript">
+        function closeEditModal() {
+            const overlay = document.getElementById("edit-modal-overlay");
+            if (overlay) {
+                overlay.classList.remove("show");
+                overlay.style.display = "none";
+                document.body.style.overflow = "";
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
             const overlay = document.getElementById("edit-modal-overlay");
-            const cancelBtn = document.getElementById("cancel-edit-modal-btn");
-            const closeBtn = document.getElementById("close-edit-modal-btn");
 
-            function closeModal() {
-                if (overlay) {
-                    overlay.classList.remove("show") ;
-                }
+            // Fermer en cliquant sur l'overlay
+            if (overlay) {
+                overlay.addEventListener("click", function(e) {
+                    if (e.target === overlay) {
+                        closeEditModal();
+                    }
+                });
             }
 
-            if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
-            if (closeBtn) closeBtn.addEventListener("click", closeModal);
+            // Fermer avec la touche Échap
+            document.addEventListener("keydown", function(e) {
+                if (e.key === "Escape" &amp;&amp; overlay &amp;&amp; overlay.style.display === "flex") {
+                    closeEditModal();
+                }
+            });
         });
     </script>
-</h:head>
-<div class="modal-overlay" id="edit-modal-overlay">
-    <div class="modal">
-        <div class="modal-header">
-            <h3 class="modal-title">Modifier le colis</h3>
-            <button type="button" class="modal-close" id="close-edit-modal-btn" aria-label="Close">
-                <i class="ri-close-line"></i>
-            </button>
-        </div>
-        <h:form id="editForm">
-            <div class="modal-body">
 
-                <div class="form-group">
-                    <label for="edit-description" class="form-label">Description</label>
-                    <h:inputTextarea id="edit-description" value="#{colisBean.description}" styleClass="form-textarea" />
-                </div>
-
-                <div class="form-group">
-                    <label for="edit-poids" class="form-label">Poids (kg)</label>
-                    <h:inputText id="edit-poids" value="#{colisBean.poids}" styleClass="form-control" />
-                </div>
-
-                <div class="form-group">
-                    <label for="edit-status" class="form-label">Statut</label>
-                    <h:selectOneMenu id="edit-status" value="#{colisBean.status}" styleClass="form-select">
-                        <f:selectItem itemValue="EN_ATTENTE" itemLabel="En attente" />
-                        <f:selectItem itemValue="EN_TRANSIT" itemLabel="En transit" />
-                        <f:selectItem itemValue="LIVRE" itemLabel="Livré" />
-                        <f:selectItem itemValue="RETOURNE" itemLabel="Retourné" />
-                        <f:selectItem itemValue="ANNULE" itemLabel="Annulé" />
-                    </h:selectOneMenu>
-                </div>
-
-                <div class="form-group">
-                    <label for="edit-rue" class="form-label">Rue</label>
-                    <h:inputText id="edit-rue" value="#{colisBean.rue}" styleClass="form-control" />
-                </div>
-
-                <div class="form-row">
-                    <div class="form-col">
-                        <label for="edit-ville" class="form-label">Ville</label>
-                        <h:inputText id="edit-ville" value="#{colisBean.ville}" styleClass="form-control" />
-                    </div>
-                    <div class="form-col">
-                        <label for="edit-codePostal" class="form-label">Code postal</label>
-                        <h:inputText id="edit-codePostal" value="#{colisBean.codePostal}" styleClass="form-control" />
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="edit-pays" class="form-label">Pays</label>
-                    <h:inputText id="edit-pays" value="#{colisBean.pays}" styleClass="form-control" />
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline" id="cancel-edit-modal-btn">Annuler</button>
-                <h:commandButton value="Enregistrer" action="#{colisBean.modifierColis}" styleClass="btn btn-primary">
-                    <f:ajax execute="@form" render=":dataTableForm" onevent="function(data) { if (data.status === 'success') { document.getElementById('edit-modal-overlay').classList.remove('show'); } }" />
-                </h:commandButton>
-            </div>
-        </h:form>
-    </div>
-</div>
-
-
-
-</html>
+</ui:composition>

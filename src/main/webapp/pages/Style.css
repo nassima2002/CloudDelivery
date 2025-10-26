@@ -1,104 +1,191 @@
-/* BODY GLOBAL */
+/* ========================================
+   VARIABLES CSS GLOBALES - COULEURS DU DASHBOARD
+   ======================================== */
+:root {
+    --primary-color: #8bd3dd;
+    --primary-light: #5bc0de;
+    --primary-dark: #9fe0ea;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --text-dark: #333333;
+    --text-muted: #6c757d;
+    --bg-light: #f0f8ff;
+    --border-color: #d1ecf1;
+}
+
+/* ========================================
+   BODY GLOBAL
+   ======================================== */
 body {
-    background-color: #f8f9fa;
+    background: linear-gradient(to bottom, #e0f7fa 0%, #b2ebf2 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+/* ========================================
+   CONTAINER DE CONNEXION
+   ======================================== */
+.login-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* min-height au lieu de height */
-    margin: 0;
-    padding: 20px; /* Ajoute un petit padding pour éviter que la card touche les bords */
-    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    padding: 2rem 1rem;
 }
 
-/* CARTE FORM */
+/* ========================================
+   CARTE PRINCIPALE
+   ======================================== */
 .card {
-    background: #ffffff;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    max-width: 400px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    max-width: 450px;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* En-tête de la carte */
+.card-header {
+    background: linear-gradient(135deg, #87ceda 0%, #5bc0de 100%);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    color: white;
+}
+
+.card-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: white;
+    letter-spacing: -0.5px;
+}
+
+.card-header p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 400;
+}
+
+/* Corps de la carte */
+.card-body {
+    padding: 2.5rem 2rem;
+}
+
+/* Formulaire */
+.login-form {
     width: 100%;
 }
 
-/* TITRE */
-.card h1 {
-    font-size: 24px;
-    margin-bottom: 10px;
+/* ========================================
+   FORMULAIRES
+   ======================================== */
+.form-group {
+    margin-bottom: 1.25rem;
 }
 
-/* PARAGRAPH */
-.card p {
-    color: #6c757d;
-    margin-bottom: 20px;
-}
-
-/* LABELS */
 .form-label {
     display: block;
-    margin-bottom: 5px;
-    color: #6c757d;
-}
-
-/* INPUTS */
-.form-control {
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-}
-
-/* BOUTON */
-.btn {
-    background-color: #343a40;
-    color: #fff;
-    padding: 0.75rem;
-    border: none;
-    border-radius: 5px;
-    width: 100%;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.btn:hover {
-    background-color: #23272b;
-}
-
-/* CENTRAGE TEXTE */
-.text-center {
-    text-align: center;
-}
-
-/* SPÉCIAL POUR LES RADIO BOUTONS */
-.role-radio {
-    display: flex;
-    gap: 20px; /* espace entre Client et Livreur */
-    margin: 10px 0 20px 0; /* marge au-dessus et en-dessous */
-}
-
-.role-radio label {
-    margin-right: 10px;
-    color: #495057;
-}
-/* Message d'erreur rouge */
-.text-danger {
-    color: red;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-weight: 500;
     font-size: 0.9rem;
-    margin-top: 0.25rem;
-}
-.form-control {
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-    border: 1px solid #ced4da;
-    border-radius: 5px;
 }
 
-/* Si tu veux rendre l'input rouge quand il y a une erreur : */
-input:invalid, select:invalid, textarea:invalid {
-    border-color: red;
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    background-color: #f9fafb;
+    box-sizing: border-box;
 }
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.1);
+}
+
+/* Input invalide */
+input:invalid {
+    border-color: #dc2626;
+}
+
+/* ========================================
+   BOUTONS
+   ======================================== */
+.btn-login {
+    width: 100%;
+    padding: 0.875rem;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 218, 228, 0.3);
+}
+
+.btn-login:active {
+    transform: translateY(0);
+}
+
+/* ========================================
+   MESSAGES D'ERREUR
+   ======================================== */
 .error-message {
-    color: red;
-    font-weight: bold;
+    color: #dc2626;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: block;
+    font-weight: 500;
+}
+
+.alert-danger {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+/* ========================================
+   LIEN D'INSCRIPTION
+   ======================================== */
+.signup-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.signup-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 0.25rem;
+    transition: color 0.2s ease;
+}
+
+.signup-link a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
 }

@@ -1,91 +1,182 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="jakarta.faces.html" xmlns:f="http://java.sun.com/jsf/core">
-<head>
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head>
     <title>Gestion des Livreurs</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+</h:head>
 
-<body class="bg-gray-100 min-h-screen p-8">
-<h1 class="text-3xl font-bold mb-6 text-center">Gestion des Livreurs</h1>
+<h:body class="bg-gray-50 min-h-screen">
 
-<!-- Formulaire pour ajouter un livreur -->
-<h:form class="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md">
-    <!-- Champs pour saisir les informations du livreur -->
-    <div class="mb-4">
-        <label class="block text-gray-700">Nom :</label>
-        <h:inputText value="#{livreurBean.nouveauLivreur.user.nom}"
-                     styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-800">Gestion des Livreurs</h1>
+                <p class="text-sm text-gray-500 mt-1">Ajouter et gérer vos livreurs</p>
+            </div>
+            <h:link outcome="admin-livreurs" styleClass="text-sm text-blue-600 hover:text-blue-700 flex items-center">
+                <i class="ri-arrow-left-line mr-1"></i>
+                Retour à la liste
+            </h:link>
+        </div>
     </div>
 
-    <div class="mb-4">
-        <label class="block text-gray-700">Prénom :</label>
-        <h:inputText value="#{livreurBean.nouveauLivreur.user.prenom}"
-                     styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
+    <div class="max-w-4xl mx-auto px-6 py-8">
+
+        <!-- Formulaire d'ajout -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-800">Ajouter un nouveau livreur</h2>
+            </div>
+
+            <h:form styleClass="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <!-- Nom -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Nom <span class="text-red-500">*</span>
+                        </label>
+                        <h:inputText value="#{livreurBean.nouveauLivreur.user.nom}"
+                                     required="true"
+                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                     placeholder="Entrez le nom" />
+                        <h:message for="@previous" styleClass="text-xs text-red-500 mt-1" />
+                    </div>
+
+                    <!-- Prénom -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Prénom <span class="text-red-500">*</span>
+                        </label>
+                        <h:inputText value="#{livreurBean.nouveauLivreur.user.prenom}"
+                                     required="true"
+                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                     placeholder="Entrez le prénom" />
+                        <h:message for="@previous" styleClass="text-xs text-red-500 mt-1" />
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Email <span class="text-red-500">*</span>
+                        </label>
+                        <h:inputText value="#{livreurBean.nouveauLivreur.user.email}"
+                                     required="true"
+                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                     placeholder="exemple@email.com">
+                            <f:validateRegex pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" />
+                        </h:inputText>
+                        <h:message for="@previous" styleClass="text-xs text-red-500 mt-1" />
+                    </div>
+
+                    <!-- Disponibilité -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Disponibilité <span class="text-red-500">*</span>
+                        </label>
+                        <h:selectOneMenu value="#{livreurBean.nouveauLivreur.disponibiliter}"
+                                         required="true"
+                                         styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white">
+                            <f:selectItem itemLabel="Sélectionner..." itemValue="" />
+                            <f:selectItem itemLabel="Disponible" itemValue="DISPONIBLE" />
+                            <f:selectItem itemLabel="En mission" itemValue="EN_MISSION" />
+                            <f:selectItem itemLabel="Indisponible" itemValue="INDISPONIBLE" />
+                        </h:selectOneMenu>
+                        <h:message for="@previous" styleClass="text-xs text-red-500 mt-1" />
+                    </div>
+
+                </div>
+
+                <div class="mt-6 flex justify-end space-x-3">
+                    <h:commandButton type="reset" value="Réinitialiser"
+                                     styleClass="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium" />
+                    <h:commandButton value="Ajouter le livreur"
+                                     action="#{livreurBean.ajouterLivreur}"
+                                     styleClass="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium" />
+                </div>
+            </h:form>
+        </div>
+
+        <!-- Liste des livreurs -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-800">Liste des Livreurs</h2>
+            </div>
+
+            <div class="overflow-x-auto">
+                <h:form>
+                    <h:dataTable value="#{livreurBean.livreurs}" var="livreur"
+                                 styleClass="min-w-full divide-y divide-gray-200"
+                                 headerClass="bg-gray-50"
+                                 rowClasses="hover:bg-gray-50">
+
+                        <!-- Nom -->
+                        <h:column>
+                            <f:facet name="header">
+                                <span class="text-xs font-medium text-gray-600 uppercase tracking-wider">Nom</span>
+                            </f:facet>
+                            <h:inputText value="#{livreur.user.nom}"
+                                         styleClass="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-transparent" />
+                        </h:column>
+
+                        <!-- Prénom -->
+                        <h:column>
+                            <f:facet name="header">
+                                <span class="text-xs font-medium text-gray-600 uppercase tracking-wider">Prénom</span>
+                            </f:facet>
+                            <h:inputText value="#{livreur.user.prenom}"
+                                         styleClass="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-transparent" />
+                        </h:column>
+
+                        <!-- Email -->
+                        <h:column>
+                            <f:facet name="header">
+                                <span class="text-xs font-medium text-gray-600 uppercase tracking-wider">Email</span>
+                            </f:facet>
+                            <h:inputText value="#{livreur.user.email}"
+                                         styleClass="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-transparent" />
+                        </h:column>
+
+                        <!-- Disponibilité -->
+                        <h:column>
+                            <f:facet name="header">
+                                <span class="text-xs font-medium text-gray-600 uppercase tracking-wider">Disponibilité</span>
+                            </f:facet>
+                            <h:selectOneMenu value="#{livreur.disponibiliter}"
+                                             styleClass="w-full px-2 py-1.5 border border-gray-300 rounded text-sm bg-white focus:ring-1 focus:ring-blue-500 focus:border-transparent">
+                                <f:selectItem itemLabel="Disponible" itemValue="DISPONIBLE" />
+                                <f:selectItem itemLabel="En mission" itemValue="EN_MISSION" />
+                                <f:selectItem itemLabel="Indisponible" itemValue="INDISPONIBLE" />
+                            </h:selectOneMenu>
+                        </h:column>
+
+                        <!-- Actions -->
+                        <h:column>
+                            <f:facet name="header">
+                                <span class="text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</span>
+                            </f:facet>
+                            <div class="flex space-x-2">
+                                <h:commandButton value="Mettre à jour"
+                                                 action="#{livreurBean.modifierLivreur(livreur)}"
+                                                 styleClass="px-3 py-1.5 bg-green-500 text-white text-xs rounded hover:bg-green-600 font-medium" />
+                                <h:commandButton value="Supprimer"
+                                                 action="#{livreurBean.supprimerLivreur(livreur.id)}"
+                                                 onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livreur ?');"
+                                                 styleClass="px-3 py-1.5 bg-red-500 text-white text-xs rounded hover:bg-red-600 font-medium" />
+                            </div>
+                        </h:column>
+
+                    </h:dataTable>
+                </h:form>
+            </div>
+        </div>
+
     </div>
 
-    <div class="mb-4">
-        <label class="block text-gray-700">Email :</label>
-        <h:inputText value="#{livreurBean.nouveauLivreur.user.email}"
-                     styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
-    </div>
-
-    <div class="mb-4">
-        <label class="block text-gray-700">Disponibilité :</label>
-        <h:inputText value="#{livreurBean.nouveauLivreur.disponibiliter}"
-                     styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
-    </div>
-
-    <div class="flex space-x-4">
-        <h:commandButton value="Ajouter" action="#{livreurBean.ajouterLivreur}"
-                         styleClass="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" />
-    </div>
-</h:form>
-
-<!-- Liste des livreurs -->
-<!-- Partie modifiée dans la section Liste des livreurs -->
-<div class="mt-12">
-    <h2 class="text-2xl font-semibold mb-4">Liste des Livreurs</h2>
-    <h:form>
-        <h:dataTable value="#{livreurBean.livreurs}" var="livreur" styleClass="min-w-full bg-white">
-            <h:column>
-                <f:facet name="header">Nom</f:facet>
-                <h:inputText value="#{livreur.user.nom}"
-                             styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
-            </h:column>
-            <h:column>
-                <f:facet name="header">Prénom</f:facet>
-                <h:inputText value="#{livreur.user.prenom}"
-                             styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
-            </h:column>
-            <h:column>
-                <f:facet name="header">Email</f:facet>
-                <h:inputText value="#{livreur.user.email}"
-                             styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
-            </h:column>
-            <h:column>
-                <f:facet name="header">Disponibilité</f:facet>
-                <h:inputText value="#{livreur.disponibiliter}"
-                             styleClass="w-full p-2 border border-gray-300 rounded mt-1" />
-            </h:column>
-            <h:column>
-                <f:facet name="header">Actions</f:facet>
-                <!-- Correction : suppression de l'inputHidden inutile qui n'est lié à aucune valeur -->
-
-                <!-- Mettre à jour les données en envoyant l'objet livreur complet -->
-                <h:commandButton value="Mettre à jour"
-                                 action="#{livreurBean.modifierLivreur(livreur)}"
-                                 styleClass="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2" />
-
-                <!-- Supprimer le livreur -->
-                <h:commandButton value="Supprimer"
-                                 action="#{livreurBean.supprimerLivreur(livreur.id)}"
-                                 onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livreur ?');"
-                                 styleClass="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" />
-            </h:column>
-        </h:dataTable>
-    </h:form>
-</div>
-
-</body>
+</h:body>
 </html>
