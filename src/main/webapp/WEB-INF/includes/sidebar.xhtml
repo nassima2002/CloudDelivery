@@ -1,108 +1,87 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-        <div class="sidebar-logo">
-            <i class="ri-box-3-fill"></i>
-            <span class="sidebar-logo-text">Admin Panel</span>
-        </div>
-        <button type="button" class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle Sidebar">
-            <i class="ri-arrow-left-s-line"></i>
-        </button>
-    </div>
-    <div class="sidebar-content">
-        <div class="sidebar-group">
-            <div class="sidebar-group-label">Dashboard</div>
-            <ul class="sidebar-menu">
-                <li class="sidebar-menu-item">
-                    <h:link outcome="admin-dashboard" styleClass="sidebar-menu-button">
-                        <i class="ri-dashboard-line"></i>
-                        <span class="sidebar-menu-button-text">Tableau de bord</span>
-                    </h:link>
-                </li>
-            </ul>
+<!-- resources/includes/sidebar.xhtml -->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <!-- Sidebar -->
+    <aside class="w-64 h-screen bg-white border-r border-gray-200 fixed top-0 left-0 flex flex-col">
+        <!-- Logo -->
+        <div class="px-6 py-5 border-b border-gray-200">
+            <h1 class="text-xl font-semibold text-blue-600">Espace Admin</h1>
         </div>
 
-        <div class="sidebar-group">
-            <div class="sidebar-group-label">Gestion des colis</div>
-            <ul class="sidebar-menu">
-                <li class="sidebar-menu-item">
-                    <h:link outcome="colis" styleClass="sidebar-menu-button #{view.viewId == '/colis.xhtml' ? 'active' : ''}">
-                        <i class="ri-box-3-line"></i>
-                        <span class="sidebar-menu-button-text">Tous les colis</span>
-                    </h:link>
-                </li>
-                <li class="sidebar-menu-item">
-                    <h:link outcome="colis-en-attente" styleClass="sidebar-menu-button #{view.viewId == '/colis-en-attente.xhtml' ? 'active' : ''}">
-                        <i class="ri-time-line"></i>
-                        <span class="sidebar-menu-button-text">En attente</span>
-                    </h:link>
-                </li>
-                <li class="sidebar-menu-item">
-                    <h:link outcome="colis-en-transit" styleClass="sidebar-menu-button #{view.viewId == '/colis-en-transit.xhtml' ? 'active' : ''}">
-                        <i class="ri-truck-line"></i>
-                        <span class="sidebar-menu-button-text">En transit</span>
-                    </h:link>
-                </li>
-                <li class="sidebar-menu-item">
-                    <h:link outcome="colis-livre" styleClass="sidebar-menu-button #{view.viewId == '/colis-livre.xhtml' ? 'active' : ''}">
-                        <i class="ri-check-double-line"></i>
-                        <span class="sidebar-menu-button-text">Livrés</span>
-                    </h:link>
-                </li>
-            </ul>
-        </div>
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-6 space-y-1">
+            <h:link outcome="admin-dashboard"
+                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-dashboard-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Tableau de bord</span>
+            </h:link>
 
-        <div class="sidebar-group">
-            <div class="sidebar-group-label">Gestion des livreurs</div>
-            <ul class="sidebar-menu">
-                <li class="sidebar-menu-item">
-                    <h:link outcome="admin-livreurs" styleClass="sidebar-menu-button #{view.viewId == '/admin-livreurs.xhtml' ? 'active' : ''}">
-                        <i class="ri-user-star-line"></i>
-                        <span class="sidebar-menu-button-text">Tous les livreurs</span>
-                    </h:link>
-                </li>
-                <li class="sidebar-menu-item">
-                    <h:link outcome="admin-livreurs-disponibles" styleClass="sidebar-menu-button #{view.viewId == '/admin-livreurs-disponibles.xhtml' ? 'active' : ''}">
-                        <i class="ri-user-follow-line"></i>
-                        <span class="sidebar-menu-button-text">Disponibles</span>
-                    </h:link>
-                </li>
-                <li class="sidebar-menu-item">
-                    <h:link outcome="admin-livreurs-en-mission" styleClass="sidebar-menu-button #{view.viewId == '/admin-livreurs-en-mission.xhtml' ? 'active' : ''}">
-                        <i class="ri-user-location-line"></i>
-                        <span class="sidebar-menu-button-text">En mission</span>
-                    </h:link>
-                </li>
-            </ul>
-        </div>
+            <h:link outcome="colis"
+                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-box-3-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Mes colis</span>
+            </h:link>
 
-        <div class="sidebar-group">
-            <div class="sidebar-group-label">Administration</div>
-            <ul class="sidebar-menu">
-                <li class="sidebar-menu-item">
-                    <h:link outcome="admin-clients" styleClass="sidebar-menu-button #{view.viewId == '/admin-clients.xhtml' ? 'active' : ''}">
-                        <i class="ri-user-line"></i>
-                        <span class="sidebar-menu-button-text">Clients</span>
-                    </h:link>
-                </li>
-                <li class="sidebar-menu-item">
-                    <h:link outcome="admin-rapports" styleClass="sidebar-menu-button #{view.viewId == '/admin-rapports.xhtml' ? 'active' : ''}">
-                        <i class="ri-file-chart-line"></i>
-                        <span class="sidebar-menu-button-text">Rapports</span>
-                    </h:link>
-                </li>
-                <li class="sidebar-menu-item">
-                    <h:link outcome="admin-parametres" styleClass="sidebar-menu-button #{view.viewId == '/admin-parametres.xhtml' ? 'active' : ''}">
-                        <i class="ri-settings-line"></i>
-                        <span class="sidebar-menu-button-text">Paramètres</span>
-                    </h:link>
-                </li>
-            </ul>
+            <h:link outcome="admin-livreurs"
+                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-user-star-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Livreurs</span>
+            </h:link>
+
+            <h:link outcome="admin-clients"
+                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-group-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Clients</span>
+            </h:link>
+
+            <h:link outcome="historique"
+                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-time-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Historique</span>
+            </h:link>
+        </nav>
+
+        <!-- Profil admin (footer) -->
+        <div class="border-t border-gray-200 p-4">
+            <div class="bg-gray-50 rounded-lg p-4">
+                <div class="flex items-center mb-3">
+                    <div class="bg-blue-100 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                        <i class="ri-user-line text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-gray-800 truncate">Admin</p>
+                        <p class="text-xs text-gray-500">Administrateur</p>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex items-center text-xs text-gray-600">
+                        <i class="ri-mail-line mr-2"></i>
+                        <span class="truncate">admin@deliveryms.ma</span>
+                    </div>
+                    <div class="flex items-center text-xs text-gray-600">
+                        <i class="ri-user-settings-line mr-2"></i>
+                        <span>Compte créé le</span>
+                    </div>
+                    <div class="text-xs text-gray-600">
+                        <span>01/01/2025 10:00</span>
+                    </div>
+                </div>
+
+                <button class="w-full mt-3 flex items-center justify-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition">
+                    <i class="ri-edit-line mr-2"></i>
+                    Modifier
+                </button>
+                <h:form styleClass="mt-2">
+                    <h:commandLink action="#{loginBean.logout}" styleClass="w-full flex items-center justify-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition">
+                        <i class="ri-logout-box-line mr-2"></i>
+                        Déconnexion
+                    </h:commandLink>
+                </h:form>
+            </div>
         </div>
-    </div>
-</aside>
-</html>
+    </aside>
+
+</ui:composition>
