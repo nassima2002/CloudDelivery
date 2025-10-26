@@ -46,19 +46,11 @@ public class LivreurService implements Serializable {
      */
     @Transactional
     public Livreur createLivreur(String email, String nom, String prenom,
-                                 Double latitude, Double longitude, String disponibilite) {
+                                 Double latitude, Double longitude, String disponibilite, String Password) {
         try {
-            String generatedPassword = generateRandomPassword();
-
-            // Envoyer le mot de passe au livreur
-            String subject = "Votre compte Livreur - Mot de passe";
-            String message = "Bonjour " + prenom + ",\n\n" +
-                    "Votre compte livreur a été créé.\n" +
-                    "Votre mot de passe est : " + generatedPassword;
-            emailService.sendEmail(email, subject, message);
 
             // Hacher le mot de passe
-            String hashedPassword = BCrypt.hashpw(generatedPassword, BCrypt.gensalt());
+            String hashedPassword = BCrypt.hashpw(Password, BCrypt.gensalt());
 
             // Créer l'utilisateur
             Utilisateur user = new Utilisateur();
@@ -82,8 +74,6 @@ public class LivreurService implements Serializable {
 
             return livreur;
 
-        } catch (MessagingException e) {
-            throw new RuntimeException("Erreur lors de l'envoi de l'email : " + e.getMessage(), e);
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la création du livreur : " + e.getMessage(), e);
         }

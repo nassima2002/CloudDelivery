@@ -85,7 +85,9 @@ public class LivreurBean implements Serializable {
                         nouveauLivreur.getUser().getPrenom(),
                         nouveauLivreur.getLatitude(),
                         nouveauLivreur.getLongitude(),
-                        nouveauLivreur.getDisponibiliter()
+                        nouveauLivreur.getDisponibiliter(),
+                        nouveauLivreur.getPassword()
+
                 );
 
                 nouveauLivreur = new Livreur();
