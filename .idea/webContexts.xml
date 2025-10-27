@@ -3,6 +3,7 @@
   <component name="WebContextManager">
     <option name="state">
       <map>
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/components/details-colis.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/components" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/components/edit-colis-form.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/components" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/includes/head.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/includes" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/includes/scripts.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/includes" />

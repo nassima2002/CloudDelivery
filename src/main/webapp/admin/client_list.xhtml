@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>Gestion des Clients - Admin Dashboard</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <style>
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.2s ease-out;
+        }
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity:0;} to {opacity:1;} }
+        @keyframes slideUp { from {transform:translateY(20px); opacity:0;} to {transform:translateY(0); opacity:1;} }
+
+        /* Password Toggle */
+        .password-input-container { position: relative; }
+        .password-toggle-btn {
+            position: absolute; right:12px; top:50%;
+            transform: translateY(-50%);
+            background:none; border:none; cursor:pointer; color:#6b7280;
+        }
+        .password-toggle-btn:hover { color:#374151; }
+    </style>
+</h:head>
+
+<h:body class="bg-gray-50 font-sans">
+
+    <!-- Sidebar -->
+    <aside class="w-64 h-screen bg-white border-r border-gray-200 fixed top-0 left-0 flex flex-col">
+        <div class="px-6 py-5 border-b border-gray-200">
+            <h1 class="text-xl font-semibold text-blue-600">Espace Admin</h1>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-1">
+            <h:link outcome="admin-dashboard" styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-dashboard-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Tableau de bord</span>
+            </h:link>
+
+            <h:link outcome="colis" styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-box-3-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Mes colis</span>
+            </h:link>
+
+            <h:link outcome="admin-livreurs" styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-user-star-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Livreurs</span>
+            </h:link>
+
+            <h:link outcome="admin-clients" styleClass="flex items-center px-4 py-2.5 bg-blue-50 text-blue-600 rounded-lg">
+                <i class="ri-group-line text-xl mr-3"></i>
+                <span class="text-sm font-medium">Clients</span>
+            </h:link>
+        </nav>
+
+        <div class="border-t border-gray-200 p-4">
+            <div class="bg-gray-50 rounded-lg p-4">
+                <div class="flex items-center mb-3">
+                    <div class="bg-blue-100 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                        <i class="ri-user-line text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-gray-800 truncate">Admin User</p>
+                        <p class="text-xs text-gray-500">Administrateur</p>
+                    </div>
+                </div>
+
+                <h:link outcome="profil" styleClass="w-full mt-3 flex items-center justify-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition">
+                    <i class="ri-user-settings-line mr-2"></i>
+                    Mon profil
+                </h:link>
+
+                <h:form styleClass="mt-2">
+                    <h:commandLink action="#{loginBean.logout}" styleClass="w-full flex items-center justify-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition">
+                        <i class="ri-logout-box-line mr-2"></i>
+                        Déconnexion
+                    </h:commandLink>
+                </h:form>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Contenu principal -->
+    <main class="ml-64 p-8">
+
+        <!-- Header -->
+        <header class="mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h1 class="text-2xl font-semibold text-gray-800">Gestion des Clients</h1>
+                    <p class="text-sm text-gray-500 mt-1">Gérez tous les clients de votre plateforme</p>
+                </div>
+
+
+            </div>
+        </header>
+
+        <!-- Messages -->
+        <h:messages id="messages" styleClass="mb-4" />
+
+        <!-- Tableau des clients -->
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <h:form id="clientsTableForm">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">ID</th>
+                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Nom complet</th>
+                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Email</th>
+                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Création</th>
+                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <ui:repeat value="#{clientBean.clients}" var="client">
+                            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                <td class="py-3 px-4 text-sm text-gray-800 font-mono">#{client.id}</td>
+                                <td class="py-3 px-4 text-sm text-gray-800">#{client.nom} #{client.prenom}</td>
+                                <td class="py-3 px-4 text-sm text-gray-600">#{client.email}</td>
+                                <td class="py-3 px-4 text-sm text-gray-600">#{client.creationDate}</td>
+                                <td class="py-3 px-4 flex space-x-2">
+                                    <h:commandButton value="Modifier"
+                                                     action="#{clientBean.preparerModification(client)}"
+                                                     styleClass="text-blue-600 hover:text-blue-700 text-xs font-medium px-2 py-1 hover:bg-blue-50 rounded transition">
+                                        <f:ajax render=":formModification" onevent="gererOuvertureModal"/>
+                                    </h:commandButton>
+
+
+                                    <h:commandButton value="Supprimer" action="#{clientBean.supprimerClient(client.id)}"
+                                                     onclick="return confirm('Confirmer ?');"
+                                                     styleClass="text-red-600 hover:text-red-700 text-xs font-medium px-2 py-1 hover:bg-red-50 rounded transition" />
+                                </td>
+                            </tr>
+                        </ui:repeat>
+                        </tbody>
+                    </table>
+                </div>
+            </h:form>
+        </div>
+
+    </main>
+
+    <!-- Modal Ajout -->
+    <div id="modalAjout" class="modal-overlay">
+        <div class="modal-content">
+            <h:form id="formAjout">
+                <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <i class="ri-add-circle-line mr-2 text-emerald-600"></i> Ajouter un client
+                    </h3>
+                    <button type="button" onclick="fermerModalAjout()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+                </div>
+
+                <div class="p-6 space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                            <h:inputText value="#{clientBean.nouveauClient.nom}" required="true"
+                                         styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                         placeholder="Entrez le nom"/>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                            <h:inputText value="#{clientBean.nouveauClient.prenom}" required="true"
+                                         styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                         placeholder="Entrez le prénom"/>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <h:inputText value="#{clientBean.nouveauClient.email}" required="true"
+                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                     placeholder="exemple@email.com"/>
+                    </div>
+
+                </div>
+
+                <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                    <button type="button" onclick="fermerModalAjout()"
+                            class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition">Annuler</button>
+                    <h:commandButton value="Ajouter" action="#{clientBean.ajouterClient()}"
+                                     styleClass="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition"/>
+                </div>
+            </h:form>
+        </div>
+    </div>
+
+    <!-- Modal Modification -->
+    <div id="modalModification" class="modal-overlay">
+        <div class="modal-content">
+            <h:form id="formModification">
+                <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <i class="ri-edit-2-line mr-2 text-amber-500"></i> Modifier le client
+                    </h3>
+                    <button type="button" onclick="fermerModalModification()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+                </div>
+
+                <div class="p-6 space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                            <h:inputText value="#{clientBean.clientSelectionne.nom}" required="true"
+                                         styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"/>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                            <h:inputText value="#{clientBean.clientSelectionne.prenom}" required="true"
+                                         styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"/>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <h:inputText value="#{clientBean.clientSelectionne.email}" required="true"
+                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"/>
+                    </div>
+
+                </div>
+
+                <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                    <button type="button" onclick="fermerModalModification()"
+                            class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition">Annuler</button>
+                    <h:commandButton value="Modifier" action="#{clientBean.modifierClient()}"
+                                     styleClass="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-medium transition"/>
+                </div>
+            </h:form>
+        </div>
+    </div>
+
+    <script>
+        function gererOuvertureModal(data) {
+            if (data.status === 'success') {
+                document.getElementById('modalModification').classList.add('active');
+            }
+        }
+
+        function ouvrirModalModification() {
+            document.getElementById('modalModification').classList.add('active');
+        }
+
+        function fermerModalModification() {
+            document.getElementById('modalModification').classList.remove('active');
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+            } else {
+                input.type = 'password';
+            }
+        }
+    </script>
+
+
+</h:body>
+</html>

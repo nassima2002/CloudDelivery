@@ -8,12 +8,16 @@ import com.project.deliveryms.repositories.UtilisateurRepository;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.mindrot.jbcrypt.BCrypt;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+
+import java.util.List;
 
 @Named
 @RequestScoped
@@ -176,5 +180,104 @@ public class UtilisateurService {
             return livreurRepository.findLivreurByEmail(utilisateur.getEmail());
         }
         return null;
+    }
+
+
+    public void save(Utilisateur utilisateur) {
+        entityManager.persist(utilisateur);
+    }
+
+    /**
+     * Mettre à jour un utilisateur existant
+
+     * Supprimer un utilisateur par son ID
+     */
+    public void delete(Long id) {
+        Utilisateur utilisateur = entityManager.find(Utilisateur.class, id);
+        if (utilisateur != null) {
+            entityManager.remove(utilisateur);
+        }
+    }
+
+    /**
+     * Trouver un utilisateur par son ID
+     */
+    public Utilisateur findById(Long id) {
+        return entityManager.find(Utilisateur.class, id);
+    }
+
+    /**
+     * Trouver un utilisateur par son email
+     */
+
+    /**
+     * Récupérer tous les utilisateurs
+     */
+    public List<Utilisateur> findAll() {
+        TypedQuery<Utilisateur> query = entityManager.createQuery(
+                "SELECT u FROM Utilisateur u ORDER BY u.creationDate DESC",
+                Utilisateur.class
+        );
+        return query.getResultList();
+    }
+
+    /**
+     * Récupérer les utilisateurs par rôle
+     */
+    public List<Utilisateur> findByRole(String role) {
+        TypedQuery<Utilisateur> query = entityManager.createQuery(
+                "SELECT u FROM Utilisateur u WHERE u.role = :role ORDER BY u.creationDate DESC",
+                Utilisateur.class
+        );
+        query.setParameter("role", role);
+        return query.getResultList();
+    }
+
+    /**
+     * Compter le nombre total d'utilisateurs
+     */
+    public Long countAll() {
+        TypedQuery<Long> query = entityManager.createQuery(
+                "SELECT COUNT(u) FROM Utilisateur u",
+                Long.class
+        );
+        return query.getSingleResult();
+    }
+
+    /**
+     * Compter le nombre d'utilisateurs par rôle
+     */
+    public Long countByRole(String role) {
+        TypedQuery<Long> query = entityManager.createQuery(
+                "SELECT COUNT(u) FROM Utilisateur u WHERE u.role = :role",
+                Long.class
+        );
+        query.setParameter("role", role);
+        return query.getSingleResult();
+    }
+
+    /**
+     * Vérifier si un email existe déjà
+     */
+    public boolean emailExists(String email) {
+        TypedQuery<Long> query = entityManager.createQuery(
+                "SELECT COUNT(u) FROM Utilisateur u WHERE u.email = :email",
+                Long.class
+        );
+        query.setParameter("email", email);
+        return query.getSingleResult() > 0;
+    }
+
+    /**
+     * Rechercher des utilisateurs par nom ou prénom
+     */
+    public List<Utilisateur> searchByName(String searchTerm) {
+        TypedQuery<Utilisateur> query = entityManager.createQuery(
+                "SELECT u FROM Utilisateur u WHERE LOWER(u.nom) LIKE LOWER(:term) " +
+                        "OR LOWER(u.prenom) LIKE LOWER(:term) ORDER BY u.nom",
+                Utilisateur.class
+        );
+        query.setParameter("term", "%" + searchTerm + "%");
+        return query.getResultList();
     }
 }
