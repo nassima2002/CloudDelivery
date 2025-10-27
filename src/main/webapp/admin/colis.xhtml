@@ -62,11 +62,7 @@
                 <span class="text-sm font-medium">Clients</span>
             </h:link>
 
-            <h:link outcome="historique"
-                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
-                <i class="ri-time-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
-                <span class="text-sm font-medium">Historique</span>
-            </h:link>
+
         </nav>
 
         <!-- Profil admin -->
@@ -192,17 +188,29 @@
                                             <!-- Voir -->
                                             <h:commandButton value="Voir"
                                                              styleClass="text-blue-600 hover:text-blue-700 text-xs font-medium px-2 py-1 hover:bg-blue-50 rounded transition">
-                                                <f:ajax execute="@this" render=":detailsModal"
+                                                <f:ajax execute="@this" render="detailsModal"
                                                         listener="#{colisBean.chargerColisAModifier(colis)}"
-                                                        onevent="function(data){ if(data.status==='success'){ document.getElementById('details-modal-overlay').classList.add('show'); } }" />
+                                                        onevent="function(data){
+                                                            console.log('Ajax status:', data.status);
+                                                            if(data.status==='success'){
+                                                                console.log('Opening details modal');
+                                                                document.getElementById('details-modal-overlay').classList.add('show');
+                                                            }
+                                                        }" />
                                             </h:commandButton>
 
                                             <!-- Modifier -->
                                             <h:commandButton value="Modifier"
                                                              styleClass="text-gray-600 hover:text-gray-700 text-xs font-medium px-2 py-1 hover:bg-gray-50 rounded transition">
-                                                <f:ajax render=":editForm"
+                                                <f:ajax execute="@this" render="editForm"
                                                         listener="#{colisBean.chargerColisAModifierA(colis)}"
-                                                        onevent="function(data){ if(data.status==='success'){ document.getElementById('edit-modal-overlay').classList.add('show'); } }" />
+                                                        onevent="function(data){
+                                                            console.log('Ajax edit status:', data.status);
+                                                            if(data.status==='success'){
+                                                                console.log('Opening edit modal');
+                                                                document.getElementById('edit-modal-overlay').classList.add('show');
+                                                            }
+                                                        }" />
                                             </h:commandButton>
 
                                             <!-- Bordereau PDF -->
@@ -237,31 +245,62 @@
 
     </main>
 
-    <!-- Formulaires et Modals (gardés séparés car ils existent déjà) -->
+    <!-- Formulaires et Modals -->
     <ui:include src="/WEB-INF/components/colis-form.xhtml" />
     <ui:include src="/WEB-INF/components/edit-colis-form.xhtml" />
     <ui:include src="/WEB-INF/components/details-colis.xhtml" />
 
-    <!-- Script pour ouvrir le modal d'ajout -->
+    <!-- Scripts -->
     <script>
         // Attendre que la page soit chargée
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page chargée - Initialisation des modals');
+
+            // Vérifier si les modals existent
+            const detailsModal = document.getElementById('details-modal-overlay');
+            const editModal = document.getElementById('edit-modal-overlay');
+            const addModal = document.getElementById('add-modal-overlay');
+
+            console.log('Details modal trouvé:', detailsModal != null);
+            console.log('Edit modal trouvé:', editModal != null);
+            console.log('Add modal trouvé:', addModal != null);
+
             // Bouton pour ouvrir le modal d'ajout
             const openBtn = document.getElementById('open-modal-btn');
             if (openBtn) {
                 openBtn.addEventListener('click', function() {
-                    // Chercher l'overlay du modal d'ajout (adapté selon votre structure)
-                    const addModal = document.querySelector('[id*="add-modal"], [id*="addForm"], [id*="colis-form"]');
+                    console.log('Ouverture du modal d\'ajout');
                     if (addModal) {
                         addModal.classList.add('show');
                         addModal.style.display = 'flex';
-                    } else {
-                        // Si pas trouvé, essayer avec un ID spécifique
-                        const modal = document.getElementById('add-modal-overlay');
-                        if (modal) {
-                            modal.classList.add('show');
-                            modal.style.display = 'flex';
-                        }
+                    }
+                });
+            }
+
+            // Fermeture des modals en cliquant sur l'overlay
+            if (detailsModal) {
+                detailsModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        console.log('Fermeture du modal détails');
+                        this.classList.remove('show');
+                    }
+                });
+            }
+
+            if (editModal) {
+                editModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        console.log('Fermeture du modal édition');
+                        this.classList.remove('show');
+                    }
+                });
+            }
+
+            if (addModal) {
+                addModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        console.log('Fermeture du modal ajout');
+                        this.classList.remove('show');
                     }
                 });
             }

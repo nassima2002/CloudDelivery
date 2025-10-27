@@ -29,6 +29,7 @@ public class ColisBean implements Serializable {
 
     private Colis nouveauColis;
     private Colis colisAModifier;
+    private Colis colisAfficher;
 
     // Propriétés du formulaire
     private String rue;
@@ -41,7 +42,7 @@ public class ColisBean implements Serializable {
     private List<Colis> listeColis;
     private List<Colis> listeColisFiltree;
     private String numeroSuivi;
-    private LocalDateTime dateEnvoi; // Ajout de la propriété dateEnvoi
+    private LocalDateTime dateEnvoi;
 
     // Variable pour la recherche
     private String searchQuery;
@@ -54,6 +55,8 @@ public class ColisBean implements Serializable {
     private int pageSize = 10;
     private int totalItems;
 
+    private Long colisId;
+
     @Inject
     private ColisService colisService;
 
@@ -64,10 +67,68 @@ public class ColisBean implements Serializable {
     public void init() {
         nouveauColis = new Colis();
         colisAModifier = new Colis();
+        colisAfficher = new Colis();
         chargerListeColis();
         listeColisFiltree = new ArrayList<>(listeColis);
         calculateTotalItems();
         resetFields();
+    }
+
+    /**
+     * Méthode pour charger les informations d'un colis pour la vue détaillée
+     * @param colis Le colis à afficher
+     */
+    public void chargerColisAModifier(Colis colis) {
+        if (colis != null) {
+            // Garder l'objet complet pour l'affichage des détails
+            this.colisAModifier = colis;
+
+            // Charger aussi les propriétés individuelles pour le formulaire d'édition
+            this.colisId = colis.getId();
+            this.description = colis.getDescription();
+            this.poids = colis.getPoids();
+            this.status = colis.getStatus();
+            this.numeroSuivi = colis.getNumeroSuivi();
+            this.dateEnvoi = colis.getDateEnvoi();
+
+            // Chargement des informations d'adresse
+            if (colis.getAdresseDestinataire() != null) {
+                Adresse adresse = colis.getAdresseDestinataire();
+                this.rue = adresse.getRue();
+                this.ville = adresse.getVille();
+                this.codePostal = adresse.getCodePostal();
+                this.pays = adresse.getPays();
+            }
+
+            System.out.println("Colis chargé - ID: " + colis.getId() + ", Numéro: " + colis.getNumeroSuivi());
+        } else {
+            System.out.println("ERREUR: Colis null passé à chargerColisAModifier");
+        }
+    }
+
+    /**
+     * Méthode pour charger les informations d'un colis pour le formulaire de modification
+     * @param colis Le colis à modifier
+     */
+    public void chargerColisAModifierA(Colis colis) {
+        chargerColisAModifier(colis);
+    }
+
+    /**
+     * Méthode pour charger les informations d'un colis pour la vue détaillée dans le modal
+     * @param colis Le colis à afficher
+     */
+    public void preparerAffichageDetails(Colis colis) {
+        if (colis != null) {
+            this.colisAfficher = colis;
+            System.out.println("Colis chargé pour affichage: " + colis.getNumeroSuivi());
+        } else {
+            System.out.println("ERREUR: Colis null passé à preparerAffichageDetails");
+        }
+    }
+
+    public void chargerColisDetails(Colis colis) {
+        this.colisAfficher = colis;
     }
 
     public void resetFields() {
@@ -79,13 +140,15 @@ public class ColisBean implements Serializable {
         pays = "";
         status = StatusColis.EN_ATTENTE;
         numeroSuivi = "";
-        dateEnvoi = null; // Réinitialiser la date d'envoi
+        dateEnvoi = null;
     }
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public String formatDate(LocalDateTime dateTime) {
-        return dateTime != null ? dateTime.format(formatter) : "";
+    public String formatDate(LocalDateTime date) {
+        if (date == null) return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return date.format(formatter);
     }
 
     // Méthode pour créer un colis
@@ -107,38 +170,6 @@ public class ColisBean implements Serializable {
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Succès", "Le colis a été ajouté avec succès"));
 
         return null;
-    }
-
-    /**
-     * Méthode pour charger les informations d'un colis pour la vue détaillée
-     * @param colis Le colis à afficher
-     */
-    public void chargerColisAModifier(Colis colis) {
-        if (colis != null) {
-            this.colisId = colis.getId();
-            this.description = colis.getDescription();
-            this.poids = colis.getPoids();
-            this.status = colis.getStatus();
-            this.numeroSuivi = colis.getNumeroSuivi();
-            this.dateEnvoi = colis.getDateEnvoi(); // Charger la date d'envoi
-
-            // Chargement des informations d'adresse
-            if (colis.getAdresseDestinataire() != null) {
-                Adresse adresse = colis.getAdresseDestinataire();
-                this.rue = adresse.getRue();
-                this.ville = adresse.getVille();
-                this.codePostal = adresse.getCodePostal();
-                this.pays = adresse.getPays();
-            }
-        }
-    }
-
-    /**
-     * Méthode pour charger les informations d'un colis pour le formulaire de modification
-     * @param colis Le colis à modifier
-     */
-    public void chargerColisAModifierA(Colis colis) {
-        chargerColisAModifier(colis);
     }
 
     /**
@@ -232,7 +263,7 @@ public class ColisBean implements Serializable {
         }
 
         calculateTotalItems();
-        currentPage = 1; // Revenir à la première page après une recherche
+        currentPage = 1;
     }
 
     /**
@@ -263,7 +294,7 @@ public class ColisBean implements Serializable {
         }
 
         calculateTotalItems();
-        currentPage = 1; // Revenir à la première page après un filtrage
+        currentPage = 1;
     }
 
     /**
@@ -340,8 +371,6 @@ public class ColisBean implements Serializable {
     private void calculateTotalItems() {
         this.totalItems = listeColisFiltree != null ? listeColisFiltree.size() : 0;
     }
-
-    private Long colisId;
 
     public void supprimerColis() {
         try {
@@ -447,11 +476,11 @@ public class ColisBean implements Serializable {
         return Math.min(getFirstItemIndex() + pageSize, totalItems);
     }
 
+    // Getters et setters
     public int getTotalItems() {
         return totalItems;
     }
 
-    // Getters et setters
     public void setListeColis(List<Colis> listeColis) {
         this.listeColis = listeColis;
         this.listeColisFiltree = new ArrayList<>(listeColis);
@@ -472,6 +501,14 @@ public class ColisBean implements Serializable {
 
     public void setColisAModifier(Colis colisAModifier) {
         this.colisAModifier = colisAModifier;
+    }
+
+    public Colis getColisAfficher() {
+        return colisAfficher;
+    }
+
+    public void setColisAfficher(Colis colisAfficher) {
+        this.colisAfficher = colisAfficher;
     }
 
     public String getRue() {
@@ -538,7 +575,6 @@ public class ColisBean implements Serializable {
         this.numeroSuivi = numeroSuivi;
     }
 
-    // Getter et setter pour dateEnvoi
     public LocalDateTime getDateEnvoi() {
         return dateEnvoi;
     }

@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
 <h:head>
     <title>Tableau de Bord Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet"/>
 </h:head>
 
 <h:body class="bg-gray-50 font-sans">
 
     <!-- Inclusion de la Sidebar -->
-    <ui:include src="sidebar.xhtml" />
+    <ui:include src="sidebar.xhtml"/>
 
     <!-- Contenu principal -->
     <main class="ml-64 p-8">
-        <!-- Header -->
+
+        <!-- ============================================ -->
+        <!-- HEADER -->
+        <!-- ============================================ -->
         <header class="mb-8">
             <h1 class="text-2xl font-semibold text-gray-800 mb-2">Tableau de Bord</h1>
             <div class="bg-emerald-50 border-l-4 border-emerald-400 p-4 rounded flex items-start">
@@ -25,101 +29,155 @@
             </div>
         </header>
 
-        <!-- Cards de statistiques -->
+
+        <!-- ============================================ -->
+        <!-- CARDS DE STATISTIQUES -->
+        <!-- ============================================ -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <!-- Card Colis -->
-            <div class="bg-white rounded-lg p-6 border border-gray-200">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-gray-600 text-sm font-medium">Colis</span>
-                    <div class="bg-blue-100 p-2 rounded">
+
+            <!-- Card Total Colis -->
+            <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-gray-600 text-sm font-medium">Total Colis</span>
+                    <div class="bg-blue-100 p-2 rounded-lg">
                         <i class="ri-box-3-line text-blue-600 text-xl"></i>
                     </div>
                 </div>
-                <p class="text-3xl font-bold text-gray-800">24</p>
+                <p class="text-3xl font-bold text-gray-800">
+                    #{statistiqueBean.nbTotalColis}
+                </p>
+                <p class="text-xs text-gray-500 mt-2">Tous les colis enregistrés</p>
             </div>
 
-            <!-- Card En transit -->
-            <div class="bg-white rounded-lg p-6 border border-gray-200">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-gray-600 text-sm font-medium">En transit</span>
-                    <div class="bg-amber-100 p-2 rounded">
-                        <i class="ri-truck-line text-amber-600 text-xl"></i>
+            <!-- Card Total Clients -->
+            <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-gray-600 text-sm font-medium">Total Clients</span>
+                    <div class="bg-purple-100 p-2 rounded-lg">
+                        <i class="ri-user-line text-purple-600 text-xl"></i>
                     </div>
                 </div>
-                <p class="text-3xl font-bold text-gray-800">18</p>
+                <p class="text-3xl font-bold text-gray-800">
+                    #{statistiqueBean.nbTotalClients}
+                </p>
+                <p class="text-xs text-gray-500 mt-2">Clients actifs</p>
             </div>
 
-            <!-- Card Total dépensé -->
-            <div class="bg-white rounded-lg p-6 border border-gray-200">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-gray-600 text-sm font-medium">Revenue total</span>
-                    <div class="bg-teal-100 p-2 rounded">
-                        <i class="ri-money-dollar-circle-line text-teal-600 text-xl"></i>
+            <!-- Card Total Livreurs -->
+            <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-gray-600 text-sm font-medium">Total Livreurs</span>
+                    <div class="bg-indigo-100 p-2 rounded-lg">
+                        <i class="ri-user-star-line text-indigo-600 text-xl"></i>
                     </div>
                 </div>
-                <p class="text-3xl font-bold text-gray-800">8,450.0 DHs</p>
+                <p class="text-3xl font-bold text-gray-800">
+                    #{statistiqueBean.nbTotalLivreurs}
+                </p>
+                <p class="text-xs text-gray-500 mt-2">Livreurs disponibles</p>
             </div>
+
         </div>
 
-        <!-- Derniers colis -->
-        <section class="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4">Derniers colis</h2>
+        <!-- ============================================ -->
+        <!-- TABLEAU DES DERNIERS COLIS -->
+        <!-- ============================================ -->
+        <section class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg font-semibold text-gray-800">Derniers colis</h2>
+                <span class="text-sm text-gray-500">
+                    <i class="ri-time-line"></i>
+                    Mis à jour récemment
+                </span>
+            </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                    <tr class="border-b border-gray-200">
-                        <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">N° COMMANDE</th>
-                        <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">DATE</th>
-                        <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">CLIENT</th>
-                        <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">MONTANT</th>
-                        <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">STATUT</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr class="border-b border-gray-100 hover:bg-gray-50">
-                        <td class="py-3 px-4 text-sm text-gray-800">ffa38063-6426-4cc2-a43d-438f7f13f494</td>
-                        <td class="py-3 px-4 text-sm text-gray-600">26/10/2025</td>
-                        <td class="py-3 px-4 text-sm text-gray-800">dounia1 kt1</td>
-                        <td class="py-3 px-4 text-sm text-gray-800">210.0 DHs</td>
-                        <td class="py-3 px-4">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                                    En cours
-                                </span>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-gray-100 hover:bg-gray-50">
-                        <td class="py-3 px-4 text-sm text-gray-800">aab21047-5315-3bb1-b32c-327e6e02e383</td>
-                        <td class="py-3 px-4 text-sm text-gray-600">25/10/2025</td>
-                        <td class="py-3 px-4 text-sm text-gray-800">Ali Oubihi</td>
-                        <td class="py-3 px-4 text-sm text-gray-800">180.0 DHs</td>
-                        <td class="py-3 px-4">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                                    Livré
-                                </span>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="py-3 px-4 text-sm text-gray-800">ccf42158-6526-5dd3-c54d-549g8g24g605</td>
-                        <td class="py-3 px-4 text-sm text-gray-600">24/10/2025</td>
-                        <td class="py-3 px-4 text-sm text-gray-800">Sara Benali</td>
-                        <td class="py-3 px-4 text-sm text-gray-800">95.0 DHs</td>
-                        <td class="py-3 px-4">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    Nouveau
-                                </span>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                <h:form>
+                    <table class="w-full">
+                        <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                N° Suivi
+                            </th>
+                            <th class="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Date d'envoi
+                            </th>
+                            <th class="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Client
+                            </th>
+                            <th class="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Poids
+                            </th>
+                            <th class="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Statut
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- Boucle sur les derniers colis -->
+                        <ui:repeat value="#{statistiqueBean.derniersColis}" var="colis">
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <!-- Numéro de suivi -->
+                                <td class="py-3 px-4 text-sm text-gray-800 font-medium">
+                                    #{colis.numeroSuivi}
+                                </td>
+
+                                <!-- Date d'envoi -->
+                                <td class="py-3 px-4 text-sm text-gray-600">
+                                    #{statistiqueBean.formaterDate(colis.dateEnvoi)}
+                                </td>
+
+                                <!-- Client (Nom + Prénom) -->
+                                <td class="py-3 px-4 text-sm text-gray-800">
+                                    <div class="flex items-center">
+                                        <i class="ri-user-3-line text-gray-400 mr-2"></i>
+                                        <span>#{colis.utilisateur.nom} #{colis.utilisateur.prenom}</span>
+                                    </div>
+                                </td>
+
+                                <!-- Poids -->
+                                <td class="py-3 px-4 text-sm text-gray-800">
+                                    <h:outputText value="#{colis.poids}">
+                                        <f:convertNumber pattern="#,##0.00"/>
+                                    </h:outputText> kg
+                                </td>
+
+                                <!-- Statut avec badge coloré -->
+                                <td class="py-3 px-4">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium #{statistiqueBean.getStatutBadgeClass(colis.status)}">
+                                            #{statistiqueBean.getStatutLibelle(colis.status)}
+                                        </span>
+                                </td>
+                            </tr>
+                        </ui:repeat>
+
+                        <!-- Message si aucun colis -->
+                        <ui:fragment rendered="#{empty statistiqueBean.derniersColis}">
+                            <tr>
+                                <td colspan="5" class="py-12 text-center">
+                                    <div class="flex flex-col items-center justify-center text-gray-400">
+                                        <i class="ri-inbox-line text-5xl mb-3"></i>
+                                        <p class="text-lg font-medium text-gray-500">Aucun colis disponible</p>
+                                        <p class="text-sm text-gray-400 mt-1">Les nouveaux colis apparaîtront ici</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ui:fragment>
+                        </tbody>
+                    </table>
+                </h:form>
             </div>
 
-            <div class="mt-4 flex justify-center">
-                <button class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+            <!-- Lien pour voir tous les colis -->
+            <div class="mt-6 pt-4 border-t border-gray-200 flex justify-center">
+                <h:link outcome="listeColis"
+                        styleClass="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors">
                     Voir tous mes colis
-                </button>
+                    <i class="ri-arrow-right-line ml-2"></i>
+                </h:link>
             </div>
         </section>
+
     </main>
 
 </h:body>
