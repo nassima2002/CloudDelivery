@@ -1,128 +1,311 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                template="/WEB-INF/templates/template.xhtml">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <!-- Page title -->
-    <ui:define name="title">Gestion des Colis - Admin Dashboard</ui:define>
-    <ui:define name="page-title">Gestion des Colis</ui:define>
+<h:head>
+    <title>Gestion des Colis - Admin Dashboard</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <style>
+        /* Cache les modals externes par défaut */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.show {
+            display: flex !important;
+        }
+    </style>
+</h:head>
 
+<h:body class="bg-gray-50 font-sans">
 
-    <ui:define name="content">
-
-        <!-- ========== HEADER ========== -->
-        <div class="page-header">
-            <h1 class="page-title">Tous les colis</h1>
-            <button type="button" class="btn btn-primary" id="open-modal-btn">
-                <i class="ri-add-line"></i> Ajouter un colis
-            </button>
+    <!-- Sidebar -->
+    <aside class="w-64 h-screen bg-white border-r border-gray-200 fixed top-0 left-0 flex flex-col">
+        <!-- Logo -->
+        <div class="px-6 py-5 border-b border-gray-200">
+            <h1 class="text-xl font-semibold text-blue-600">Espace Admin</h1>
         </div>
 
-        <!-- ========== FILTRAGE & RECHERCHE ========== -->
-        <div class="card">
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-6 space-y-1">
+            <h:link outcome="admin-dashboard"
+                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-dashboard-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Tableau de bord</span>
+            </h:link>
+
+            <h:link outcome="colis"
+                    styleClass="flex items-center px-4 py-2.5 bg-blue-50 text-blue-600 rounded-lg">
+                <i class="ri-box-3-line text-xl mr-3"></i>
+                <span class="text-sm font-medium">Mes colis</span>
+            </h:link>
+
+            <h:link outcome="admin-livreurs"
+                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-user-star-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Livreurs</span>
+            </h:link>
+
+            <h:link outcome="admin-clients"
+                    styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
+                <i class="ri-group-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
+                <span class="text-sm font-medium">Clients</span>
+            </h:link>
 
 
-            <!-- ========== TABLEAU DES COLIS ========== -->
-            <div class="card-body">
-                <h:form id="dataTableForm">
-                    <h:dataTable value="#{colisBean.listeColis}" var="colis"
-                                 styleClass="data-table"
-                                 headerClass="table-header"
-                                 rowClasses="table-row">
+        </nav>
 
-                        <!-- Référence -->
-                        <h:column>
-                            <f:facet name="header">Référence</f:facet>
-                            <h:outputText value="#{colis.numeroSuivi}" />
-                        </h:column>
+        <!-- Profil admin -->
+        <div class="border-t border-gray-200 p-4">
+            <div class="bg-gray-50 rounded-lg p-4">
+                <div class="flex items-center mb-3">
+                    <div class="bg-blue-100 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                        <i class="ri-user-line text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-gray-800 truncate">Admin User</p>
+                        <p class="text-xs text-gray-500">Administrateur</p>
+                    </div>
+                </div>
 
-                        <!-- Client -->
-                        <h:column>
-                            <f:facet name="header">Client</f:facet>
-                            <h:outputText value="#{colis.utilisateur.nom} #{colis.utilisateur.prenom}" />
-                        </h:column>
+                <div class="space-y-2">
+                    <div class="flex items-center text-xs text-gray-600">
+                        <i class="ri-mail-line mr-2"></i>
+                        <span class="truncate">admin@example.com</span>
+                    </div>
+                </div>
 
-                        <!-- Destination -->
-                        <h:column>
-                            <f:facet name="header">Destination</f:facet>
-                            <h:outputText value="#{colis.adresseDestinataire.rue}, #{colis.adresseDestinataire.ville}, #{colis.adresseDestinataire.codePostal}, #{colis.adresseDestinataire.pays}" />
-                        </h:column>
+                <h:link outcome="profil" styleClass="w-full mt-3 flex items-center justify-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition">
+                    <i class="ri-user-settings-line mr-2"></i>
+                    Mon profil
+                </h:link>
 
-                        <!-- Statut -->
-                        <h:column>
-                            <f:facet name="header">Statut</f:facet>
-
-                            <h:outputText value="Livré"
-                                          styleClass="status-badge status-delivered"
-                                          rendered="#{colis.status.toString() eq 'LIVRE'}" />
-                            <h:outputText value="En transit"
-                                          styleClass="status-badge status-transit"
-                                          rendered="#{colis.status.toString() eq 'EN_TRANSIT'}" />
-                            <h:outputText value="En attente"
-                                          styleClass="status-badge status-pending"
-                                          rendered="#{colis.status.toString() eq 'EN_ATTENTE'}" />
-                            <h:outputText value="Retourné"
-                                          styleClass="status-badge status-returned"
-                                          rendered="#{colis.status.toString() eq 'RETOURNE'}" />
-                            <h:outputText value="Annulé"
-                                          styleClass="status-badge status-canceled"
-                                          rendered="#{colis.status.toString() eq 'ANNULE'}" />
-                        </h:column>
-
-                        <!-- Date -->
-                        <h:column>
-                            <f:facet name="header">Date création</f:facet>
-                            <h:outputText value="#{colisBean.formatDate(colis.dateEnvoi)}" />
-                        </h:column>
-
-                        <!-- Actions -->
-                        <h:column>
-                            <f:facet name="header">Actions</f:facet>
-                            <div class="action-buttons">
-
-                                <!-- Voir -->
-                                <h:commandButton value="Voir" styleClass="action-button">
-                                    <f:ajax execute="@this" render=":detailsModal"
-                                            listener="#{colisBean.chargerColisAModifier(colis)}"
-                                            onevent="function(data){ if(data.status==='success'){ document.getElementById('details-modal-overlay').classList.add('show'); } }" />
-                                </h:commandButton>
-
-                                <!-- Modifier -->
-                                <h:commandButton value="Modifier" styleClass="action-button">
-                                    <f:ajax render=":editForm"
-                                            listener="#{colisBean.chargerColisAModifierA(colis)}"
-                                            onevent="function(data){ if(data.status==='success'){ document.getElementById('edit-modal-overlay').classList.add('show'); } }" />
-                                </h:commandButton>
-
-                                <!-- Bordereau -->
-                                <h:commandButton value="Bordereau"
-                                                 styleClass="action-button action-pdf"
-                                                 title="Générer bordereau d'expédition"
-                                                 action="#{mesColisBean.genererBordereauPDF(colis.id)}"
-                                                 immediate="true" />
-
-                                <!-- Supprimer -->
-                                <h:commandButton value="Supprimer"
-                                                 action="#{colisBean.supprimerColis}"
-                                                 onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce colis?');"
-                                                 styleClass="action-button delete">
-                                    <f:setPropertyActionListener target="#{colisBean.colisId}" value="#{colis.id}" />
-                                </h:commandButton>
-                            </div>
-                        </h:column>
-                    </h:dataTable>
+                <h:form styleClass="mt-2">
+                    <h:commandLink action="#{loginBean.logout}" styleClass="w-full flex items-center justify-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition">
+                        <i class="ri-logout-box-line mr-2"></i>
+                        Déconnexion
+                    </h:commandLink>
                 </h:form>
+            </div>
+        </div>
+    </aside>
 
-                <!-- Pagination -->
-                <ui:include src="/WEB-INF/includes/pagination.xhtml" />
+    <!-- Contenu principal -->
+    <main class="ml-64 p-8">
+
+        <!-- Header -->
+        <header class="mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h1 class="text-2xl font-semibold text-gray-800">Gestion des Colis</h1>
+                    <p class="text-sm text-gray-500 mt-1">Gérez tous les colis de votre plateforme</p>
+                </div>
+                <button type="button" id="open-modal-btn" class="bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition flex items-center text-sm font-medium">
+                    <i class="ri-add-line mr-2"></i> Ajouter un colis
+                </button>
+            </div>
+
+            <!-- Message de bienvenue -->
+            <div class="bg-emerald-50 border-l-4 border-emerald-400 p-4 rounded flex items-start">
+                <i class="ri-checkbox-circle-line text-emerald-500 text-xl mr-3 mt-0.5"></i>
+                <p class="text-emerald-800 text-sm">Bienvenue dans votre tableau de bord, Admin !</p>
+            </div>
+        </header>
+
+        <!-- Card principale -->
+        <div class="bg-white rounded-lg border border-gray-200">
+
+            <!-- Tableau des colis -->
+            <div class="p-6">
+                <h:form id="dataTableForm">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                            <tr class="border-b border-gray-200">
+                                <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Référence</th>
+                                <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Client</th>
+                                <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Destination</th>
+                                <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Statut</th>
+                                <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Date création</th>
+                                <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <ui:repeat value="#{colisBean.listeColis}" var="colis">
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <!-- Référence -->
+                                    <td class="py-3 px-4 text-sm text-gray-800 font-mono">
+                                        <h:outputText value="#{colis.numeroSuivi}" />
+                                    </td>
+
+                                    <!-- Client -->
+                                    <td class="py-3 px-4 text-sm text-gray-800">
+                                        <h:outputText value="#{colis.utilisateur.nom} #{colis.utilisateur.prenom}" />
+                                    </td>
+
+                                    <!-- Destination -->
+                                    <td class="py-3 px-4 text-sm text-gray-600">
+                                        <h:outputText value="#{colis.adresseDestinataire.ville}, #{colis.adresseDestinataire.pays}" />
+                                    </td>
+
+                                    <!-- Statut -->
+                                    <td class="py-3 px-4">
+                                        <h:outputText value="Livré"
+                                                      styleClass="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
+                                                      rendered="#{colis.status.toString() eq 'LIVRE'}" />
+                                        <h:outputText value="En transit"
+                                                      styleClass="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800"
+                                                      rendered="#{colis.status.toString() eq 'EN_TRANSIT'}" />
+                                        <h:outputText value="En attente"
+                                                      styleClass="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                                                      rendered="#{colis.status.toString() eq 'EN_ATTENTE'}" />
+                                        <h:outputText value="Retourné"
+                                                      styleClass="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800"
+                                                      rendered="#{colis.status.toString() eq 'RETOURNE'}" />
+                                        <h:outputText value="Annulé"
+                                                      styleClass="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
+                                                      rendered="#{colis.status.toString() eq 'ANNULE'}" />
+                                    </td>
+
+                                    <!-- Date -->
+                                    <td class="py-3 px-4 text-sm text-gray-600">
+                                        <h:outputText value="#{colisBean.formatDate(colis.dateEnvoi)}" />
+                                    </td>
+
+                                    <!-- Actions -->
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center space-x-2">
+                                            <!-- Voir -->
+                                            <h:commandButton value="Voir"
+                                                             styleClass="text-blue-600 hover:text-blue-700 text-xs font-medium px-2 py-1 hover:bg-blue-50 rounded transition">
+                                                <f:ajax execute="@this" render="detailsModal"
+                                                        listener="#{colisBean.chargerColisAModifier(colis)}"
+                                                        onevent="function(data){
+                                                            console.log('Ajax status:', data.status);
+                                                            if(data.status==='success'){
+                                                                console.log('Opening details modal');
+                                                                document.getElementById('details-modal-overlay').classList.add('show');
+                                                            }
+                                                        }" />
+                                            </h:commandButton>
+
+                                            <!-- Modifier -->
+                                            <h:commandButton value="Modifier"
+                                                             styleClass="text-gray-600 hover:text-gray-700 text-xs font-medium px-2 py-1 hover:bg-gray-50 rounded transition">
+                                                <f:ajax execute="@this" render="editForm"
+                                                        listener="#{colisBean.chargerColisAModifierA(colis)}"
+                                                        onevent="function(data){
+                                                            console.log('Ajax edit status:', data.status);
+                                                            if(data.status==='success'){
+                                                                console.log('Opening edit modal');
+                                                                document.getElementById('edit-modal-overlay').classList.add('show');
+                                                            }
+                                                        }" />
+                                            </h:commandButton>
+
+                                            <!-- Bordereau PDF -->
+                                            <h:commandButton value="PDF"
+                                                             styleClass="text-teal-600 hover:text-teal-700 text-xs font-medium px-2 py-1 hover:bg-teal-50 rounded transition"
+                                                             title="Générer bordereau d'expédition"
+                                                             action="#{mesColisBean.genererBordereauPDF(colis.id)}"
+                                                             immediate="true" />
+
+                                            <!-- Supprimer -->
+                                            <h:commandButton value="Supprimer"
+                                                             action="#{colisBean.supprimerColis}"
+                                                             onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce colis?');"
+                                                             styleClass="text-red-600 hover:text-red-700 text-xs font-medium px-2 py-1 hover:bg-red-50 rounded transition">
+                                                <f:setPropertyActionListener target="#{colisBean.colisId}" value="#{colis.id}" />
+                                            </h:commandButton>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="mt-6 flex justify-center">
+                        <ui:include src="/WEB-INF/includes/pagination.xhtml" />
+                    </div>
+                </h:form>
             </div>
         </div>
 
-        <!-- ========== FORMULAIRES ET MODALS ========== -->
-        <ui:include src="/WEB-INF/components/colis-form.xhtml" />
-        <ui:include src="/WEB-INF/components/edit-colis-form.xhtml" />
-        <ui:include src="/WEB-INF/components/details-colis.xhtml" />
+    </main>
 
-    </ui:define>
-</ui:composition>
+    <!-- Formulaires et Modals -->
+    <ui:include src="/WEB-INF/components/colis-form.xhtml" />
+    <ui:include src="/WEB-INF/components/edit-colis-form.xhtml" />
+    <ui:include src="/WEB-INF/components/details-colis.xhtml" />
+
+    <!-- Scripts -->
+    <script>
+        // Attendre que la page soit chargée
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page chargée - Initialisation des modals');
+
+            // Vérifier si les modals existent
+            const detailsModal = document.getElementById('details-modal-overlay');
+            const editModal = document.getElementById('edit-modal-overlay');
+            const addModal = document.getElementById('add-modal-overlay');
+
+            console.log('Details modal trouvé:', detailsModal != null);
+            console.log('Edit modal trouvé:', editModal != null);
+            console.log('Add modal trouvé:', addModal != null);
+
+            // Bouton pour ouvrir le modal d'ajout
+            const openBtn = document.getElementById('open-modal-btn');
+            if (openBtn) {
+                openBtn.addEventListener('click', function() {
+                    console.log('Ouverture du modal d\'ajout');
+                    if (addModal) {
+                        addModal.classList.add('show');
+                        addModal.style.display = 'flex';
+                    }
+                });
+            }
+
+            // Fermeture des modals en cliquant sur l'overlay
+            if (detailsModal) {
+                detailsModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        console.log('Fermeture du modal détails');
+                        this.classList.remove('show');
+                    }
+                });
+            }
+
+            if (editModal) {
+                editModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        console.log('Fermeture du modal édition');
+                        this.classList.remove('show');
+                    }
+                });
+            }
+
+            if (addModal) {
+                addModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        console.log('Fermeture du modal ajout');
+                        this.classList.remove('show');
+                    }
+                });
+            }
+        });
+    </script>
+
+</h:body>
+</html>

@@ -14,6 +14,8 @@ public class Livreur {
     private Double latitude;
     private Double longitude;
     private String disponibiliter;
+    private String Password;
+
 
     @OneToOne
     @JoinColumn(name = "user_id") // clé étrangère dans livreur vers user
@@ -34,4 +36,10 @@ public class Livreur {
 
     public Utilisateur getUser() { return user; }
     public void setUser(Utilisateur user) { this.user = user; }
+
+    public String getPassword() {
+        return Password;
+    }
+
+    public void setPassword(String password) { this.Password = Password; }
 }
