@@ -81,7 +81,7 @@ public class LoginBean implements Serializable {
                             LOG.warning("⚠️  Aucun livreur trouvé pour cet utilisateur");
                         }
                         LOG.info("═══════════════════════════════════");
-                        return "/livreur/livreur-dashboard.xhtml?faces-redirect=true";
+                        return "/livreur/dashboard.xhtml?faces-redirect=true";
 
                     case CLIENT:
                         LOG.info("➡️  Redirection CLIENT");
