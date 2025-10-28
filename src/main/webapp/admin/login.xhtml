@@ -2,61 +2,147 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html">
 <h:head>
-    <title>Connexion - Espace Client</title>
+    <title>Connexion - Espace Administrateur</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <style>
+        .shake {
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+    </style>
 </h:head>
 
-<h:body class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="bg-white shadow-lg rounded-2xl w-full max-w-md overflow-hidden">
-        <!-- En-tête -->
-        <div class="bg-gradient-to-r from-sky-500 to-sky-300 text-white text-center p-8">
-            <h1 class="text-2xl font-semibold mb-1">Espace Admin</h1>
-            <p class="text-sm opacity-90">Connectez-vous pour accéder à votre tableau de bord</p>
+<h:body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white shadow-2xl rounded-2xl w-full max-w-md overflow-hidden">
+
+        <!-- En-tête Admin -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-500 text-white text-center p-8">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full mb-4">
+                <i class="ri-shield-user-line text-5xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold mb-2">Espace Administrateur</h1>
+            <p class="text-sm opacity-90">Connectez-vous pour gérer la plateforme</p>
         </div>
 
         <!-- Formulaire -->
         <div class="p-8">
-            <h:form>
-                <!-- Messages globaux -->
-                <h:messages globalOnly="true" styleClass="bg-red-50 border border-red-300 text-red-700 p-3 rounded-md mb-4 text-sm w-full" />
+            <h:form id="loginForm">
+
+                <!-- Messages d'erreur -->
+                <h:messages globalOnly="true"
+                            styleClass="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 text-sm"
+                            errorClass="flex items-start mb-2"
+                            warnClass="flex items-start mb-2 bg-yellow-50 border-yellow-500 text-yellow-700"
+                            infoClass="flex items-start mb-2 bg-blue-50 border-blue-500 text-blue-700"
+                            layout="list" />
 
                 <!-- Email -->
-                <div class="mb-4">
-                    <label for="email" class="block text-gray-700 font-medium mb-2">Adresse Email</label>
+                <div class="mb-5">
+                    <h:outputLabel for="email" styleClass="block text-gray-700 font-semibold mb-2 flex items-center">
+                        <i class="ri-mail-line mr-2 text-blue-600 text-lg"></i>
+                        <span>Adresse Email</span>
+                    </h:outputLabel>
                     <h:inputText id="email"
                                  value="#{loginBean.email}"
-                                 styleClass="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none"
-                                 placeholder="votre@email.com"
+                                 styleClass="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
+                                 placeholder="admin@exemple.com"
                                  required="true"
-                                 requiredMessage="L'email est obligatoire." />
-                    <h:message for="email" styleClass="text-red-600 text-sm mt-1 block"/>
+                                 requiredMessage="⚠️ L'email est obligatoire"
+                                 validatorMessage="⚠️ Format d'email invalide">
+                    </h:inputText>
+                    <h:message for="email" styleClass="text-red-600 text-sm mt-2 flex items-center">
+                        <i class="ri-error-warning-line mr-1"></i>
+                    </h:message>
                 </div>
 
                 <!-- Mot de passe -->
                 <div class="mb-6">
-                    <label for="password" class="block text-gray-700 font-medium mb-2">Mot de passe</label>
+                    <h:outputLabel for="password" styleClass="block text-gray-700 font-semibold mb-2 flex items-center">
+                        <i class="ri-lock-password-line mr-2 text-blue-600 text-lg"></i>
+                        <span>Mot de passe</span>
+                    </h:outputLabel>
                     <h:inputSecret id="password"
                                    value="#{loginBean.motDePasse}"
-                                   styleClass="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                                   styleClass="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
                                    placeholder="••••••••"
                                    required="true"
-                                   requiredMessage="Le mot de passe est obligatoire." />
-                    <h:message for="password" styleClass="text-red-600 text-sm mt-1 block"/>
+                                   requiredMessage="⚠️ Le mot de passe est obligatoire" />
+                    <h:message for="password" styleClass="text-red-600 text-sm mt-2 flex items-center">
+                        <i class="ri-error-warning-line mr-1"></i>
+                    </h:message>
                 </div>
 
-                <!-- Bouton -->
+                <!-- Info importante -->
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-lg">
+                    <div class="flex items-start">
+                        <i class="ri-information-line text-blue-600 text-2xl mr-3 flex-shrink-0 mt-0.5"></i>
+                        <div class="text-sm text-blue-800">
+                            <p class="font-semibold mb-1">Accès restreint</p>
+                            <p>Cet espace est réservé aux administrateurs autorisés uniquement.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bouton de connexion -->
                 <h:commandButton value="Se connecter"
-                                 styleClass="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2.5 rounded-lg shadow-sm transition duration-200"
-                                 action="#{loginBean.login}" />
+                                 styleClass="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition duration-200 transform hover:scale-[1.02] flex items-center justify-center"
+                                 action="#{loginBean.login}">
+                </h:commandButton>
 
-                <!-- Lien inscription -->
-                <div class="text-center text-gray-600 text-sm mt-6 border-t pt-4">
-                    Vous n'avez pas encore de compte ?
-                    <h:link value="Créer un compte" outcome="register.xhtml" styleClass="text-sky-600 font-semibold hover:underline ml-1" />
+                <!-- Séparateur -->
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-4 bg-white text-gray-500">Autre connexion</span>
+                    </div>
                 </div>
+
+                <!-- Liens vers autres espaces -->
+                <div class="space-y-3">
+                    <h:link outcome="/livreur/login.xhtml"
+                            styleClass="flex items-center justify-center w-full px-4 py-2.5 border-2 border-orange-200 text-orange-600 rounded-lg hover:bg-orange-50 transition group">
+                        <i class="ri-truck-line text-xl mr-2 group-hover:scale-110 transition-transform"></i>
+                        <span class="font-medium">Connexion Livreur</span>
+                    </h:link>
+
+                    <h:link outcome="/pages/login.xhtml"
+                            styleClass="flex items-center justify-center w-full px-4 py-2.5 border-2 border-sky-200 text-sky-600 rounded-lg hover:bg-sky-50 transition group">
+                        <i class="ri-user-line text-xl mr-2 group-hover:scale-110 transition-transform"></i>
+                        <span class="font-medium">Connexion Client</span>
+                    </h:link>
+                </div>
+
+                <!-- Footer -->
+                <div class="mt-6 pt-4 border-t border-gray-200 text-center">
+                    <p class="text-xs text-gray-500">
+                        <i class="ri-lock-line mr-1"></i>
+                        Connexion sécurisée avec chiffrement SSL
+                    </p>
+                </div>
+
             </h:form>
         </div>
     </div>
+
+    <!-- Toast notification (optionnel) -->
+    <script>
+        // Animation shake sur erreur
+        document.addEventListener('DOMContentLoaded', function() {
+            const messages = document.querySelector('.bg-red-50');
+            if (messages) {
+                messages.classList.add('shake');
+            }
+        });
+    </script>
+
 </h:body>
 </html>
