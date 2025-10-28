@@ -1,5 +1,3 @@
-// 2. LivreurService.java - Updated updateLivreur method
-
 package com.project.deliveryms.services;
 
 import com.project.deliveryms.entities.Livreur;
@@ -10,21 +8,23 @@ import com.project.deliveryms.repositories.UserRepository;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-import jakarta.mail.MessagingException;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Logger;
 
 @Stateless
 public class LivreurService implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    // ✅ Logger placé au bon endroit
+    private static final Logger LOG = Logger.getLogger(LivreurService.class.getName());
+
     @PersistenceContext(unitName = "default")
     private EntityManager entityManager;
 
@@ -41,9 +41,7 @@ public class LivreurService implements Serializable {
         // Constructeur vide requis pour EJB
     }
 
-    /**
-     * Crée un nouveau livreur avec un compte utilisateur associé
-     */
+
     @Transactional
     public Livreur createLivreur(String email, String nom, String prenom,
                                  Double latitude, Double longitude, String disponibilite, String Password) {
@@ -81,28 +79,36 @@ public class LivreurService implements Serializable {
 
     /**
      * Met à jour un livreur et son utilisateur associé
-     * Méthode améliorée pour une mise à jour plus robuste
      */
-    private static final Logger LOG = Logger.getLogger(LivreurService.class.getName());
-
     @Transactional
     public void updateLivreur(Livreur livreur) {
         try {
-            // Vérification que le livreur et son ID sont valides
             if (livreur == null || livreur.getId() == null) {
-                throw new RuntimeException("Données de livreur invalides");
+                throw new IllegalArgumentException("Données de livreur invalides");
             }
 
-            // Appel au repository pour mettre à jour le livreur
-            livreurRepository.update(livreur);
+            LOG.info("=== MISE À JOUR LIVREUR ===");
+            LOG.info("ID: " + livreur.getId());
 
-            // Pour forcer la mise à jour en base de données
-            // EntityManager.flush() force la persistance et valide la transaction
+            // ✅ Si un nouveau mot de passe est fourni, le hasher
+            if (livreur.getUser() != null && livreur.getUser().getMotDePasse() != null) {
+                String password = livreur.getUser().getMotDePasse();
+
+                // Vérifier si ce n'est pas déjà un hash BCrypt
+                if (!password.matches("^\\$2[aby]?\\$\\d{2}\\$.{53}$")) {
+                    LOG.info("🔐 Nouveau mot de passe détecté, hachage en cours...");
+                    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+                    livreur.getUser().setMotDePasse(hashedPassword);
+                }
+            }
+
+            livreurRepository.update(livreur);
             livreurRepository.getEntityManager().flush();
 
-            LOG.info("Livreur mis à jour avec succès - ID: " + livreur.getId());
+            LOG.info("✅ Livreur mis à jour avec succès - ID: " + livreur.getId());
+            LOG.info("=== FIN MISE À JOUR LIVREUR ===");
         } catch (Exception e) {
-            LOG.severe("Erreur lors de la mise à jour: " + e.getMessage());
+            LOG.severe("❌ Erreur lors de la mise à jour: " + e.getMessage());
             throw new RuntimeException("Erreur lors de la mise à jour du livreur: " + e.getMessage(), e);
         }
     }
@@ -112,6 +118,7 @@ public class LivreurService implements Serializable {
      */
     @Transactional
     public void deleteLivreur(Long id) {
+        LOG.info("Suppression du livreur ID: " + id);
         Livreur livreur = entityManager.find(Livreur.class, id);
         if (livreur != null) {
             Utilisateur user = livreur.getUser();
@@ -120,76 +127,64 @@ public class LivreurService implements Serializable {
             if (user != null) {
                 entityManager.remove(entityManager.contains(user) ? user : entityManager.merge(user));
             }
+            LOG.info("✅ Livreur supprimé avec succès");
         }
     }
 
-    /**
-     * Récupère tous les livreurs
-     */
     public List<Livreur> getAllLivreurs() {
         return livreurRepository.findAll();
     }
 
-    /**
-     * Récupère les livreurs non disponibles
-     */
     public List<Livreur> getLivreursIndisponibles() {
         return livreurRepository.findLivreursIndisponibles();
     }
 
-    /**
-     * Génère un mot de passe aléatoire
-     */
-    private String generateRandomPassword() {
-        int length = 10;
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder sb = new StringBuilder();
-        Random random = new Random();
-        for (int i = 0; i < length; i++) {
-            sb.append(chars.charAt(random.nextInt(chars.length())));
-        }
-        return sb.toString();
-    }
-
-
-    /**
-     * Récupère un livreur par son ID
-     * @param id L'identifiant du livreur
-     * @return Le livreur ou null s'il n'existe pas
-     */
     public Livreur getLivreurById(Long id) {
         try {
             if (id == null) {
                 return null;
             }
 
-            System.out.println("Récupération du livreur avec ID: " + id);
-
-            // Utiliser l'entity manager pour récupérer le livreur
+            LOG.info("Récupération du livreur avec ID: " + id);
             Livreur livreur = entityManager.find(Livreur.class, id);
 
-            // Forcer le chargement des associations pour éviter les erreurs LazyInitialization
             if (livreur != null && livreur.getUser() != null) {
-                // Accéder aux propriétés pour forcer le chargement
+                // Forcer le chargement des associations
                 livreur.getUser().getNom();
                 livreur.getUser().getEmail();
             }
 
             return livreur;
         } catch (Exception e) {
-            System.err.println("Erreur lors de la récupération du livreur: " + e.getMessage());
+            LOG.severe("❌ Erreur lors de la récupération du livreur: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
     }
 
-
     public Livreur findByEmail(String email) {
-        return livreurRepository.findLivreurByEmail(email);
+        LOG.info("🔍 Recherche livreur par email: " + email);
+
+        try {
+            Livreur livreur = livreurRepository.findLivreurByEmail(email);
+
+            if (livreur != null) {
+                LOG.info("✅ Livreur trouvé - ID: " + livreur.getId());
+                if (livreur.getUser() != null) {
+                    LOG.info("   User associé - ID: " + livreur.getUser().getId() +
+                            ", Email: " + livreur.getUser().getEmail());
+                } else {
+                    LOG.warning("   ⚠️ User NULL pour ce livreur!");
+                }
+            } else {
+                LOG.warning("❌ Aucun livreur trouvé pour l'email: " + email);
+            }
+
+            return livreur;
+        } catch (Exception e) {
+            LOG.severe("❌ Erreur lors de la recherche du livreur: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
-
-
-
-
-
 }

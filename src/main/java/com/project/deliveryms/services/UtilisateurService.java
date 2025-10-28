@@ -8,82 +8,52 @@ import com.project.deliveryms.repositories.UtilisateurRepository;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.mindrot.jbcrypt.BCrypt;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
-import java.util.List;
-
 @Named
-@RequestScoped
+@RequestScoped  // Le service est léger, donc @RequestScoped est approprié
 public class UtilisateurService {
+    Utilisateur trouverParEmailEtMotDePasse(String email, String motDePasse) {
+        return null;
+    }
 
     @Inject
     private UtilisateurRepository utilisateurRepository;
-
     @Inject
     private LivreureRepository livreurRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    // Authentifier un utilisateur avec validation du format BCrypt
+    // Authentifier un utilisateur
     public String authentifier(String email, String motDePasse) {
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email);
 
         if (utilisateur == null) {
+            // Utilisateur n'existe pas
             return "Utilisateur non trouvé";
         }
 
-        String storedPassword = utilisateur.getMotDePasse();
-
-        // ✅ Vérification 1 : Mot de passe null ou vide
-        if (storedPassword == null || storedPassword.isEmpty()) {
-            System.err.println("❌ ERREUR : Mot de passe vide pour l'utilisateur : " + email);
-            return "Erreur de configuration du mot de passe";
+        if (!BCrypt.checkpw(motDePasse, utilisateur.getMotDePasse())) {
+            // Mot de passe incorrect
+            return "Mot de passe incorrect";
         }
 
-        // ✅ Vérification 2 : Format BCrypt valide
-        // Format attendu : $2a$10$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx (60 caractères)
-        if (!storedPassword.matches("^\\$2[aby]?\\$\\d{2}\\$.{53}$")) {
-            System.err.println("❌ ERREUR : Format BCrypt invalide pour : " + email);
-            System.err.println("   Hash stocké (début) : " + storedPassword.substring(0, Math.min(20, storedPassword.length())));
-            System.err.println("   Longueur du hash : " + storedPassword.length() + " (attendu: 60)");
-
-            // ⚠️ MODE TEMPORAIRE : Si le mot de passe est en texte clair
-            if (storedPassword.equals(motDePasse)) {
-                System.err.println("⚠️ ATTENTION : Mot de passe en TEXTE CLAIR détecté pour : " + email);
-                System.err.println("   URGENT : Ce mot de passe doit être hashé immédiatement !");
-                return "Connexion réussie"; // Permet la connexion mais LOG l'erreur
-            }
-
-            return "Format de mot de passe invalide. Contactez l'administrateur.";
-        }
-
-        // ✅ Vérification 3 : Validation BCrypt avec gestion d'erreur
-        try {
-            if (!BCrypt.checkpw(motDePasse, storedPassword)) {
-                return "Mot de passe incorrect";
-            }
-        } catch (IllegalArgumentException e) {
-            System.err.println("❌ ERREUR BCrypt pour : " + email);
-            System.err.println("   Message d'erreur : " + e.getMessage());
-            e.printStackTrace();
-            return "Erreur lors de la vérification du mot de passe";
-        }
-
+        // Connexion réussie
         return "Connexion réussie";
     }
 
+
+
+
     public String inscrire(Utilisateur utilisateur) {
+        // Vérifier si un utilisateur avec cet email existe déjà
         Utilisateur utilisateurExistant = utilisateurRepository.findByEmail(utilisateur.getEmail());
 
         if (utilisateurExistant != null) {
+            // Si l'email existe déjà
             return "Email déjà utilisé. Veuillez en choisir un autre.";
         }
 
@@ -94,190 +64,70 @@ public class UtilisateurService {
         String motDePasseHash = BCrypt.hashpw(utilisateur.getMotDePasse(), BCrypt.gensalt());
         utilisateur.setMotDePasse(motDePasseHash);
 
+        // Enregistrer l'utilisateur dans la base de données
         utilisateurRepository.save(utilisateur);
         return "Inscription réussie";
     }
-
     public Utilisateur findUserByEmail(String email) {
         return utilisateurRepository.findByEmail(email);
     }
+    @PersistenceContext
+    private EntityManager entityManager;
 
+    // ✅ Méthode pour mettre à jour un utilisateur
     @Transactional
     public void update(Utilisateur utilisateur) {
-        if (utilisateur == null || utilisateur.getId() == null) {
-            throw new IllegalArgumentException("L'utilisateur ou son ID ne peut pas être null");
-        }
+        // Recherche de l'utilisateur par son identifiant (supposons que l'utilisateur ait un ID unique)
+        Utilisateur existingUser = entityManager.find(Utilisateur.class, utilisateur.getId());
+        if (existingUser != null) {
+            // Mise à jour des informations de l'utilisateur
+            existingUser.setNom(utilisateur.getNom());
+            existingUser.setPrenom(utilisateur.getPrenom());
+            existingUser.setEmail(utilisateur.getEmail());
 
-        entityManager.merge(utilisateur);
-        entityManager.flush();
-    }
-
-    // ✅ Méthode pour hasher un mot de passe existant (migration)
-    @Transactional
-    public void hashUserPassword(String email, String plainPassword) {
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email);
-        if (utilisateur != null) {
-            String hashedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt());
-            utilisateur.setMotDePasse(hashedPassword);
-            entityManager.merge(utilisateur);
-            entityManager.flush();
-            System.out.println("✅ Mot de passe hashé avec succès pour : " + email);
-        }
-    }
-
-    // ✅ Méthode pour migrer tous les mots de passe en texte clair
-    @Transactional
-    public int migrateAllPlainPasswords() {
-        int count = 0;
-        // Récupérer tous les utilisateurs
-        // Note: Vous devrez peut-être ajouter findAll() dans votre repository
-        try {
-            var users = entityManager.createQuery("SELECT u FROM Utilisateur u", Utilisateur.class).getResultList();
-
-            for (Utilisateur user : users) {
-                String password = user.getMotDePasse();
-
-                // Si le mot de passe n'est pas au format BCrypt
-                if (password != null && !password.matches("^\\$2[aby]?\\$\\d{2}\\$.{53}$")) {
-                    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-                    user.setMotDePasse(hashedPassword);
-                    entityManager.merge(user);
-                    count++;
-                    System.out.println("✅ Mot de passe migré pour : " + user.getEmail());
-                }
+            // Si le mot de passe a changé, mettez à jour le mot de passe aussi
+            if (utilisateur.getMotDePasse() != null && !utilisateur.getMotDePasse().isEmpty()) {
+                existingUser.setMotDePasse(utilisateur.getMotDePasse());
             }
 
-            entityManager.flush();
-            System.out.println("✅ Migration terminée : " + count + " mot(s) de passe migré(s)");
-        } catch (Exception e) {
-            System.err.println("❌ Erreur lors de la migration : " + e.getMessage());
-            e.printStackTrace();
+            // L'entité sera automatiquement mise à jour grâce à la gestion de l'EntityManager
         }
-
-        return count;
     }
+
 
     public Utilisateur getUtilisateurConnecte() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
         return (Utilisateur) session.getAttribute("utilisateurConnecte");
     }
-
     public Livreur getLivreurConnecte() {
+        // Récupérer l'objet utilisateur de la session
         FacesContext context = FacesContext.getCurrentInstance();
         HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 
         if (session == null) {
-            return null;
+            return null; // Si la session n'existe pas, retourner null
         }
 
+
+        // Vérifier l'utilisateur connecté dans la session
         Object utilisateurSession = session.getAttribute("utilisateurConnecte");
 
         if (utilisateurSession instanceof Livreur) {
+            // Si l'objet de session est un Livreur, le retourner directement
             return (Livreur) utilisateurSession;
         } else if (utilisateurSession instanceof Utilisateur) {
+            // Si l'objet de session est un Utilisateur, rechercher le livreur par son email
             Utilisateur utilisateur = (Utilisateur) utilisateurSession;
             return livreurRepository.findLivreurByEmail(utilisateur.getEmail());
         }
-        return null;
+        return null; // Si aucune correspondance, retourner null
+    }
+    // Méthode pour récupérer l'utilisateur par email
+    public Utilisateur getUtilisateurByEmail(String email) {
+        return livreurRepository.findByEmail(email);
     }
 
 
-    public void save(Utilisateur utilisateur) {
-        entityManager.persist(utilisateur);
-    }
 
-    /**
-     * Mettre à jour un utilisateur existant
-
-     * Supprimer un utilisateur par son ID
-     */
-    public void delete(Long id) {
-        Utilisateur utilisateur = entityManager.find(Utilisateur.class, id);
-        if (utilisateur != null) {
-            entityManager.remove(utilisateur);
-        }
-    }
-
-    /**
-     * Trouver un utilisateur par son ID
-     */
-    public Utilisateur findById(Long id) {
-        return entityManager.find(Utilisateur.class, id);
-    }
-
-    /**
-     * Trouver un utilisateur par son email
-     */
-
-    /**
-     * Récupérer tous les utilisateurs
-     */
-    public List<Utilisateur> findAll() {
-        TypedQuery<Utilisateur> query = entityManager.createQuery(
-                "SELECT u FROM Utilisateur u ORDER BY u.creationDate DESC",
-                Utilisateur.class
-        );
-        return query.getResultList();
-    }
-
-    /**
-     * Récupérer les utilisateurs par rôle
-     */
-    public List<Utilisateur> findByRole(String role) {
-        TypedQuery<Utilisateur> query = entityManager.createQuery(
-                "SELECT u FROM Utilisateur u WHERE u.role = :role ORDER BY u.creationDate DESC",
-                Utilisateur.class
-        );
-        query.setParameter("role", role);
-        return query.getResultList();
-    }
-
-    /**
-     * Compter le nombre total d'utilisateurs
-     */
-    public Long countAll() {
-        TypedQuery<Long> query = entityManager.createQuery(
-                "SELECT COUNT(u) FROM Utilisateur u",
-                Long.class
-        );
-        return query.getSingleResult();
-    }
-
-    /**
-     * Compter le nombre d'utilisateurs par rôle
-     */
-    public Long countByRole(String role) {
-        TypedQuery<Long> query = entityManager.createQuery(
-                "SELECT COUNT(u) FROM Utilisateur u WHERE u.role = :role",
-                Long.class
-        );
-        query.setParameter("role", role);
-        return query.getSingleResult();
-    }
-
-    /**
-     * Vérifier si un email existe déjà
-     */
-    public boolean emailExists(String email) {
-        TypedQuery<Long> query = entityManager.createQuery(
-                "SELECT COUNT(u) FROM Utilisateur u WHERE u.email = :email",
-                Long.class
-        );
-        query.setParameter("email", email);
-        return query.getSingleResult() > 0;
-    }
-
-    /**
-     * Rechercher des utilisateurs par nom ou prénom
-     */
-    public List<Utilisateur> searchByName(String searchTerm) {
-        TypedQuery<Utilisateur> query = entityManager.createQuery(
-                "SELECT u FROM Utilisateur u WHERE LOWER(u.nom) LIKE LOWER(:term) " +
-                        "OR LOWER(u.prenom) LIKE LOWER(:term) ORDER BY u.nom",
-                Utilisateur.class
-        );
-        query.setParameter("term", "%" + searchTerm + "%");
-        return query.getResultList();
-    }
 }

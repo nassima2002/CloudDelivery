@@ -2,6 +2,7 @@ package com.project.deliveryms.beans;
 
 import com.project.deliveryms.entities.Livreur;
 import com.project.deliveryms.entities.Utilisateur;
+import com.project.deliveryms.enums.Role;
 import com.project.deliveryms.services.LivreurService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
@@ -9,8 +10,8 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -26,7 +27,6 @@ public class LivreurBean implements Serializable {
 
     private Livreur nouveauLivreur;
     private Livreur livreurModifie;
-
     private List<Livreur> livreurs;
 
     @PostConstruct
@@ -79,6 +79,17 @@ public class LivreurBean implements Serializable {
                 LOG.info("Tentative d'ajout d'un livreur: " + nouveauLivreur.getUser().getNom() + " " +
                         nouveauLivreur.getUser().getPrenom());
 
+                // ✅ CORRECTION: Utiliser le mot de passe de l'utilisateur
+                String motDePasse = nouveauLivreur.getUser().getMotDePasse();
+
+                if (motDePasse == null || motDePasse.trim().isEmpty()) {
+                    LOG.warning("Mot de passe vide ou null");
+                    addErrorMessage("Le mot de passe est obligatoire");
+                    return null;
+                }
+
+                LOG.info("Mot de passe reçu (longueur): " + motDePasse.length());
+
                 livreurService.createLivreur(
                         nouveauLivreur.getUser().getEmail(),
                         nouveauLivreur.getUser().getNom(),
@@ -86,8 +97,7 @@ public class LivreurBean implements Serializable {
                         nouveauLivreur.getLatitude(),
                         nouveauLivreur.getLongitude(),
                         nouveauLivreur.getDisponibiliter(),
-                        nouveauLivreur.getPassword()
-
+                        motDePasse  // ✅ Mot de passe en clair (sera hashé par le service)
                 );
 
                 nouveauLivreur = new Livreur();
@@ -129,12 +139,10 @@ public class LivreurBean implements Serializable {
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, message, null));
     }
 
-    // Méthode améliorée pour la préparation de la modification
     public void preparerModification(Livreur livreur) {
         try {
             LOG.info("Préparation de la modification pour le livreur ID: " + livreur.getId());
 
-            // Récupérer l'entité complète depuis la base de données
             Livreur livreurFromDB = livreurService.getLivreurById(livreur.getId());
 
             if (livreurFromDB == null) {
@@ -143,12 +151,10 @@ public class LivreurBean implements Serializable {
                 return;
             }
 
-            // Créer une nouvelle instance pour éviter les problèmes de détachement
             livreurModifie = new Livreur();
             livreurModifie.setId(livreurFromDB.getId());
             livreurModifie.setDisponibiliter(livreurFromDB.getDisponibiliter());
 
-            // Copier les coordonnées si elles existent
             if (livreurFromDB.getLatitude() != null) {
                 livreurModifie.setLatitude(livreurFromDB.getLatitude());
             }
@@ -156,7 +162,6 @@ public class LivreurBean implements Serializable {
                 livreurModifie.setLongitude(livreurFromDB.getLongitude());
             }
 
-            // Copier les informations utilisateur
             Utilisateur userClone = new Utilisateur();
             if (livreurFromDB.getUser() != null) {
                 userClone.setId(livreurFromDB.getUser().getId());
@@ -168,7 +173,6 @@ public class LivreurBean implements Serializable {
 
             livreurModifie.setUser(userClone);
 
-            // Logs pour vérification
             LOG.info("--- Préparation Modification Livreur ---");
             LOG.info("ID: " + livreurModifie.getId());
             LOG.info("Nom: " + livreurModifie.getUser().getNom());
@@ -177,7 +181,6 @@ public class LivreurBean implements Serializable {
             LOG.info("Disponibilité: " + livreurModifie.getDisponibiliter());
             LOG.info("-----------------------------------");
 
-            // Force le bean à être synchronisé avec la vue
             FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("formModification");
 
         } catch (Exception e) {
@@ -187,7 +190,6 @@ public class LivreurBean implements Serializable {
         }
     }
 
-    // Méthode améliorée pour la modification du livreur
     public String modifierLivreur() {
         try {
             if (livreurModifie == null || livreurModifie.getId() == null) {
