@@ -11,7 +11,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
     <style>
-        /* Modal Styles */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -51,7 +50,6 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* Password Toggle */
         .password-input-container {
             position: relative;
         }
@@ -77,12 +75,10 @@
 
     <!-- Sidebar -->
     <aside class="w-64 h-screen bg-white border-r border-gray-200 fixed top-0 left-0 flex flex-col">
-        <!-- Logo -->
         <div class="px-6 py-5 border-b border-gray-200">
             <h1 class="text-xl font-semibold text-blue-600">Espace Admin</h1>
         </div>
 
-        <!-- Navigation -->
         <nav class="flex-1 px-4 py-6 space-y-1">
             <h:link outcome="admin-dashboard"
                     styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
@@ -107,11 +103,8 @@
                 <i class="ri-group-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
                 <span class="text-sm font-medium">Clients</span>
             </h:link>
-
-
         </nav>
 
-        <!-- Profil admin -->
         <div class="border-t border-gray-200 p-4">
             <div class="bg-gray-50 rounded-lg p-4">
                 <div class="flex items-center mb-3">
@@ -123,7 +116,6 @@
                         <p class="text-xs text-gray-500">Administrateur</p>
                     </div>
                 </div>
-
 
                 <h:link outcome="profil" styleClass="w-full mt-3 flex items-center justify-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition">
                     <i class="ri-user-settings-line mr-2"></i>
@@ -143,7 +135,6 @@
     <!-- Contenu principal -->
     <main class="ml-64 p-8">
 
-        <!-- Header -->
         <header class="mb-6">
             <div class="flex justify-between items-center mb-4">
                 <div>
@@ -151,26 +142,20 @@
                     <p class="text-sm text-gray-500 mt-1">Gérez tous les livreurs de votre plateforme</p>
                 </div>
 
-                <!-- Bouton Ajouter -->
                 <button onclick="ouvrirModalAjout()" type="button" class="bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition flex items-center text-sm font-medium">
                     <i class="ri-add-line mr-2"></i> Ajouter un livreur
                 </button>
             </div>
 
-            <!-- Message de bienvenue -->
             <div class="bg-emerald-50 border-l-4 border-emerald-400 p-4 rounded flex items-start">
                 <i class="ri-checkbox-circle-line text-emerald-500 text-xl mr-3 mt-0.5"></i>
                 <p class="text-emerald-800 text-sm">Bienvenue dans votre tableau de bord, Admin !</p>
             </div>
         </header>
 
-        <!-- Messages -->
         <h:messages id="messages" styleClass="mb-4" />
 
-        <!-- Card principale -->
         <div class="bg-white rounded-lg border border-gray-200">
-
-            <!-- Tableau des livreurs -->
             <div class="p-6">
                 <h:form id="livreursTableForm">
                     <div class="overflow-x-auto">
@@ -188,12 +173,10 @@
                             <tbody>
                             <ui:repeat value="#{livreurBean.livreurs}" var="livreur">
                                 <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                    <!-- ID -->
                                     <td class="py-3 px-4 text-sm text-gray-800 font-mono">
                                         #<h:outputText value="#{livreur.id}" />
                                     </td>
 
-                                    <!-- Nom complet -->
                                     <td class="py-3 px-4">
                                         <div class="flex items-center">
                                             <div class="bg-blue-100 rounded-full w-10 h-10 flex items-center justify-center mr-3">
@@ -207,7 +190,6 @@
                                         </div>
                                     </td>
 
-                                    <!-- Email -->
                                     <td class="py-3 px-4 text-sm text-gray-600">
                                         <div class="flex items-center">
                                             <i class="ri-mail-line mr-2 text-gray-400"></i>
@@ -215,7 +197,6 @@
                                         </div>
                                     </td>
 
-                                    <!-- Disponibilité -->
                                     <td class="py-3 px-4">
                                         <h:outputText value="Disponible"
                                                       styleClass="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
@@ -228,7 +209,6 @@
                                                       rendered="#{livreur.disponibiliter eq 'INDISPONIBLE' or livreur.disponibiliter eq 'non'}" />
                                     </td>
 
-                                    <!-- Affecter un colis -->
                                     <td class="py-3 px-4">
                                         <div class="flex items-center space-x-2">
                                             <h:selectOneMenu value="#{livreurColisBean.idColisAffectation}"
@@ -249,10 +229,8 @@
                                         </div>
                                     </td>
 
-                                    <!-- Actions -->
                                     <td class="py-3 px-4">
                                         <div class="flex items-center space-x-2">
-                                            <!-- Modifier -->
                                             <h:commandButton value="Modifier"
                                                              styleClass="text-blue-600 hover:text-blue-700 text-xs font-medium px-2 py-1 hover:bg-blue-50 rounded transition">
                                                 <f:ajax listener="#{livreurBean.preparerModification(livreur)}"
@@ -260,7 +238,6 @@
                                                         onevent="handleModalOpen" />
                                             </h:commandButton>
 
-                                            <!-- Supprimer -->
                                             <h:commandButton value="Supprimer"
                                                              action="#{livreurBean.supprimerLivreur(livreur.id)}"
                                                              onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livreur ?');"
@@ -284,7 +261,6 @@
     <div id="modalAjout" class="modal-overlay">
         <div class="modal-content">
             <h:form id="formAjout">
-                <!-- Header -->
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-semibold text-gray-800 flex items-center">
@@ -297,12 +273,13 @@
                     </div>
                 </div>
 
-                <!-- Body -->
                 <div class="p-6 space-y-4">
                     <div class="grid grid-cols-2 gap-4">
                         <!-- Nom -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Nom <span class="text-red-500">*</span>
+                            </label>
                             <h:inputText value="#{livreurBean.nouveauLivreur.user.nom}"
                                          styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                          required="true"
@@ -311,7 +288,9 @@
 
                         <!-- Prénom -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Prénom <span class="text-red-500">*</span>
+                            </label>
                             <h:inputText value="#{livreurBean.nouveauLivreur.user.prenom}"
                                          styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                          required="true"
@@ -321,31 +300,40 @@
 
                     <!-- Email -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Email <span class="text-red-500">*</span>
+                        </label>
                         <h:inputText value="#{livreurBean.nouveauLivreur.user.email}"
                                      styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                      required="true"
                                      placeholder="exemple@email.com" />
                     </div>
 
-                    <!-- Mot de passe -->
+                    <!-- 🔹 CORRECTION: Utiliser password au lieu de motDePasse -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Mot de passe <span class="text-red-500">*</span>
+                        </label>
                         <div class="password-input-container">
                             <h:inputSecret id="passwordAjout"
-                                           value="#{livreurBean.nouveauLivreur.user.motDePasse}"
+                                           value="#{livreurBean.nouveauLivreur.password}"
                                            styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
                                            required="true"
-                                           placeholder="*****" />
+                                           placeholder="Minimum 6 caractères" />
                             <button type="button" class="password-toggle-btn" onclick="togglePassword('formAjout:passwordAjout'); return false;">
                                 <i class="ri-eye-line" id="formAjout:passwordAjout-icon"></i>
                             </button>
                         </div>
+                        <p class="mt-1 text-xs text-gray-500">
+                            <i class="ri-information-line"></i> Le mot de passe sera hashé automatiquement
+                        </p>
                     </div>
 
                     <!-- Disponibilité -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Disponibilité</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Disponibilité <span class="text-red-500">*</span>
+                        </label>
                         <h:selectOneMenu value="#{livreurBean.nouveauLivreur.disponibiliter}"
                                          styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                          required="true">
@@ -355,16 +343,15 @@
                     </div>
                 </div>
 
-                <!-- Footer -->
                 <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
                     <button type="button"
                             onclick="fermerModalAjout()"
                             class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
                         Annuler
                     </button>
-                    <h:commandButton value="Ajouter"
+                    <h:commandButton value="Ajouter le livreur"
                                      action="#{livreurBean.ajouterLivreur}"
-                                     styleClass="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                                     styleClass="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center">
                         <f:ajax execute="@form" render=":livreursTableForm :messages" onevent="handleAjout" />
                     </h:commandButton>
                 </div>
@@ -378,7 +365,6 @@
             <h:form id="formModification">
                 <h:inputHidden id="idLivreur" value="#{livreurBean.livreurModifie.id}" />
 
-                <!-- Header -->
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-semibold text-gray-800 flex items-center">
@@ -391,10 +377,8 @@
                     </div>
                 </div>
 
-                <!-- Body -->
                 <div class="p-6 space-y-4">
                     <div class="grid grid-cols-2 gap-4">
-                        <!-- Nom -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
                             <h:inputText id="nomLivreur"
@@ -403,7 +387,6 @@
                                          required="true" />
                         </div>
 
-                        <!-- Prénom -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
                             <h:inputText id="prenomLivreur"
@@ -413,7 +396,6 @@
                         </div>
                     </div>
 
-                    <!-- Email -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
                         <h:inputText id="emailLivreur"
@@ -422,7 +404,6 @@
                                      required="true" />
                     </div>
 
-                    <!-- Disponibilité -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Disponibilité</label>
                         <h:selectOneMenu id="disponibiliteLivreur"
@@ -435,14 +416,13 @@
                     </div>
                 </div>
 
-                <!-- Footer -->
                 <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
                     <button type="button"
                             onclick="fermerModalModification()"
                             class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
                         Annuler
                     </button>
-                    <h:commandButton value="Enregistrer"
+                    <h:commandButton value="Enregistrer les modifications"
                                      action="#{livreurBean.modifierLivreur}"
                                      styleClass="px-4 py-2 text-sm font-medium text-white bg-amber-600 rounded-lg hover:bg-amber-700">
                         <f:ajax execute="@form" render=":livreursTableForm :messages" onevent="handleModification" />
@@ -452,9 +432,7 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script>
-        // Fonction pour basculer la visibilité du mot de passe
         function togglePassword(inputId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(inputId + '-icon');
@@ -470,7 +448,6 @@
             }
         }
 
-        // Modal Ajout
         function ouvrirModalAjout() {
             document.getElementById('modalAjout').classList.add('active');
         }
@@ -481,15 +458,13 @@
 
         function handleAjout(data) {
             if (data.status === "success") {
-                console.log("Ajout en cours...");
-                fermerModalAjout();
+                console.log("✅ Ajout réussi");
+                setTimeout(() => fermerModalAjout(), 100);
             }
         }
 
-        // Modal Modification
         function ouvrirModalModification() {
             document.getElementById('modalModification').classList.add('active');
-            console.log("Modal modification ouvert");
         }
 
         function fermerModalModification() {
@@ -497,38 +472,18 @@
         }
 
         function handleModalOpen(data) {
-            console.log("Status AJAX:", data.status);
-
-            if (data.status === "begin") {
-                console.log("⏳ Début de la requête AJAX");
-            } else if (data.status === "success") {
-                console.log("✅ Requête AJAX réussie");
-            } else if (data.status === "complete") {
-                console.log("🎯 Traitement terminé, ouverture du modal");
-                // Petite pause pour s'assurer que le DOM est à jour
-                setTimeout(function() {
-                    try {
-                        ouvrirModalModification();
-                        // Log des valeurs pour debug
-                        console.log("Valeurs chargées:");
-                        console.log("- ID:", document.getElementById('formModification:idLivreur')?.value);
-                        console.log("- Nom:", document.getElementById('formModification:nomLivreur')?.value);
-                        console.log("- Prénom:", document.getElementById('formModification:prenomLivreur')?.value);
-                    } catch(e) {
-                        console.error("❌ Erreur:", e);
-                    }
-                }, 150);
+            if (data.status === "complete") {
+                setTimeout(() => ouvrirModalModification(), 150);
             }
         }
 
         function handleModification(data) {
             if (data.status === "success") {
-                console.log("Modification en cours...");
-                fermerModalModification();
+                console.log("✅ Modification réussie");
+                setTimeout(() => fermerModalModification(), 100);
             }
         }
 
-        // Fermer les modals en cliquant à l'extérieur
         window.onclick = function(event) {
             const modalAjout = document.getElementById('modalAjout');
             const modalModification = document.getElementById('modalModification');

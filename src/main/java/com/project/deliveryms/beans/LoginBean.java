@@ -34,166 +34,127 @@ public class LoginBean implements Serializable {
     @Inject
     private LivreurService livreurService;
 
-    public void login() {
-        LOG.info("========================================");
-        LOG.info("=== DÉBUT LOGIN BEAN ===");
+    public String login() {
+        LOG.info("═══════════════════════════════════");
+        LOG.info("🔐 TENTATIVE DE CONNEXION");
+        LOG.info("═══════════════════════════════════");
         LOG.info("Email: " + email);
-        LOG.info("Mot de passe (longueur): " + (motDePasse != null ? motDePasse.length() : "NULL"));
 
-        try {
-            // Vérification des champs
-            if (email == null || email.trim().isEmpty()) {
-                LOG.warning("❌ Email vide");
-                addErrorMessage("L'email est obligatoire");
-                return;
-            }
+        String result = utilisateurService.authentifier(email, motDePasse);
 
-            if (motDePasse == null || motDePasse.trim().isEmpty()) {
-                LOG.warning("❌ Mot de passe vide");
-                addErrorMessage("Le mot de passe est obligatoire");
-                return;
-            }
-
-            // Authentification
-            String result = utilisateurService.authentifier(email, motDePasse);
-            LOG.info("Résultat authentification: " + result);
-
-            if (!"Connexion réussie".equals(result)) {
-                LOG.warning("❌ Échec authentification: " + result);
-                addErrorMessage(result);
-                return;
-            }
-
-            LOG.info("✅ Authentification réussie");
-
-            // Récupération de l'utilisateur
+        if ("Connexion réussie".equals(result)) {
+            // Récupérer l'utilisateur par email
             Utilisateur utilisateur = utilisateurService.findUserByEmail(email);
 
-            if (utilisateur == null) {
-                LOG.severe("❌ Utilisateur NULL après authentification réussie!");
-                addErrorMessage("Erreur: Utilisateur introuvable");
-                return;
+            if (utilisateur != null) {
+                LOG.info("✅ Utilisateur trouvé: " + utilisateur.getNom() + " " + utilisateur.getPrenom());
+                LOG.info("   Rôle: " + utilisateur.getRole());
+
+                FacesContext facesContext = FacesContext.getCurrentInstance();
+                HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true);
+
+                Role role = utilisateur.getRole();
+
+                // ✅ TOUJOURS stocker l'utilisateur dans "utilisateurConnecte"
+                session.setAttribute("utilisateurConnecte", utilisateur);
+                LOG.info("✅ Utilisateur stocké en session");
+
+                // Redirection selon le rôle
+                switch (role) {
+                    case ADMIN:
+                        LOG.info("➡️  Redirection ADMIN");
+                        LOG.info("═══════════════════════════════════");
+                        return "/admin/admin-dashboard.xhtml?faces-redirect=true";
+
+                    case LIVREUR:
+                        LOG.info("➡️  Redirection LIVREUR");
+                        Livreur livreur = livreurService.findByEmail(utilisateur.getEmail());
+                        if (livreur != null) {
+                            LOG.info("   Livreur ID: " + livreur.getId());
+                            LOG.info("   Disponibilité: " + livreur.getDisponibiliter());
+
+                            // ✅ STOCKER LE LIVREUR DANS UN ATTRIBUT SÉPARÉ
+                            // NE PAS écraser "utilisateurConnecte"
+                            session.setAttribute("livreurConnecte", livreur);
+                            LOG.info("✅ Livreur stocké en session (attribut séparé)");
+                        } else {
+                            LOG.warning("⚠️  Aucun livreur trouvé pour cet utilisateur");
+                        }
+                        LOG.info("═══════════════════════════════════");
+                        return "/livreur/dashboard.xhtml?faces-redirect=true";
+
+                    case CLIENT:
+                        LOG.info("➡️  Redirection CLIENT");
+                        LOG.info("═══════════════════════════════════");
+                        return "/pages/dashboard.xhtml?faces-redirect=true";
+
+                    default:
+                        LOG.warning("❌ Rôle non reconnu: " + role);
+                        LOG.info("═══════════════════════════════════");
+                        facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Erreur", "Rôle utilisateur non reconnu"));
+                        return null;
+                }
+            } else {
+                LOG.warning("❌ Utilisateur introuvable après authentification");
+                LOG.info("═══════════════════════════════════");
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Utilisateur introuvable"));
+                return null;
             }
-
-            LOG.info("✅ Utilisateur récupéré: " + utilisateur.getEmail());
-            LOG.info("   - ID: " + utilisateur.getId());
-            LOG.info("   - Rôle: " + utilisateur.getRole());
-
-            // Création de la session
+        } else {
+            LOG.warning("❌ Échec authentification: " + result);
+            LOG.info("═══════════════════════════════════");
             FacesContext facesContext = FacesContext.getCurrentInstance();
-            HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true);
-            LOG.info("✅ Session créée: " + session.getId());
-
-            Role role = utilisateur.getRole();
-            String redirectUrl = null;
-
-            // Déterminer l'URL de redirection selon le rôle
-            switch (role) {
-                case ADMIN:
-                    LOG.info("🔄 Redirection ADMIN vers /admin/admin-dashboard.xhtml");
-                    session.setAttribute("utilisateurConnecte", utilisateur);
-                    redirectUrl = "/admin/admin-dashboard.xhtml";
-                    break;
-
-                case LIVREUR:
-                    LOG.info("🔍 Recherche du profil LIVREUR pour: " + utilisateur.getEmail());
-                    Livreur livreur = livreurService.findByEmail(utilisateur.getEmail());
-
-                    if (livreur != null) {
-                        LOG.info("✅ Livreur trouvé - ID: " + livreur.getId());
-                        LOG.info("   - Latitude: " + livreur.getLatitude());
-                        LOG.info("   - Longitude: " + livreur.getLongitude());
-                        LOG.info("   - Disponibilité: " + livreur.getDisponibiliter());
-
-                        session.setAttribute("utilisateurConnecte", livreur);
-                        LOG.info("✅ Livreur stocké en session");
-                        LOG.info("🔄 Redirection LIVREUR vers /admin/admin-livreurs.xhtml");
-
-                        redirectUrl = "/livreur/dashboard.xhtml";
-                    } else {
-                        LOG.severe("❌ Profil livreur NON trouvé pour: " + utilisateur.getEmail());
-                        addErrorMessage("Profil livreur non trouvé pour cet utilisateur");
-                        return;
-                    }
-                    break;
-
-                case CLIENT:
-                    LOG.info("🔄 Redirection CLIENT vers /pages/dashboard.xhtml");
-                    session.setAttribute("utilisateurConnecte", utilisateur);
-                    redirectUrl = "/pages/dashboard.xhtml";
-                    break;
-
-                default:
-                    LOG.warning("❌ Rôle non reconnu: " + role);
-                    addErrorMessage("Rôle utilisateur non reconnu");
-                    return;
-            }
-
-            // Effectuer la redirection
-            if (redirectUrl != null) {
-                String contextPath = facesContext.getExternalContext().getRequestContextPath();
-                String fullUrl = contextPath + redirectUrl;
-                LOG.info("🚀 Redirection vers: " + fullUrl);
-
-                facesContext.getExternalContext().redirect(fullUrl);
-                facesContext.responseComplete();
-            }
-
-        } catch (IOException e) {
-            LOG.severe("❌ ERREUR lors de la redirection: " + e.getMessage());
-            e.printStackTrace();
-            addErrorMessage("Erreur lors de la redirection: " + e.getMessage());
-        } catch (Exception e) {
-            LOG.severe("❌ ERREUR CRITIQUE lors du login: " + e.getMessage());
-            e.printStackTrace();
-            addErrorMessage("Erreur lors de la connexion: " + e.getMessage());
-        } finally {
-            LOG.info("=== FIN LOGIN BEAN ===");
-            LOG.info("========================================");
+            facesContext.getExternalContext().getFlash().setKeepMessages(true);
+            facesContext.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, result, null));
+            return null;
         }
     }
 
     public String logout() {
+        LOG.info("🚪 Déconnexion en cours...");
+
         FacesContext facesContext = FacesContext.getCurrentInstance();
         HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
 
         Role roleUtilisateur = null;
 
         if (session != null) {
+            // 🔹 Récupérer le rôle avant d'invalider la session
             Object userObj = session.getAttribute("utilisateurConnecte");
             if (userObj instanceof Utilisateur) {
                 roleUtilisateur = ((Utilisateur) userObj).getRole();
-            } else if (userObj instanceof Livreur) {
-                roleUtilisateur = Role.LIVREUR;
+                LOG.info("Rôle utilisateur: " + roleUtilisateur);
             }
 
+            // 🔹 Invalider la session (supprime tous les attributs)
             session.invalidate();
+            LOG.info("✅ Session invalidée");
         }
 
         try {
             String basePath = facesContext.getExternalContext().getRequestContextPath();
 
+            // 🔹 Redirection selon le rôle
             if (roleUtilisateur == Role.ADMIN) {
+                LOG.info("➡️  Redirection vers login admin");
                 facesContext.getExternalContext().redirect(basePath + "/admin/login.xhtml");
             } else if (roleUtilisateur == Role.LIVREUR) {
+                LOG.info("➡️  Redirection vers login livreur");
                 facesContext.getExternalContext().redirect(basePath + "/livreur/login.xhtml");
             } else {
+                LOG.info("➡️  Redirection vers login client");
                 facesContext.getExternalContext().redirect(basePath + "/pages/login.xhtml");
             }
 
         } catch (IOException e) {
-            LOG.severe("Erreur lors du logout: " + e.getMessage());
+            LOG.severe("❌ Erreur lors de la redirection: " + e.getMessage());
             e.printStackTrace();
         }
 
         return null;
-    }
-
-    private void addErrorMessage(String message) {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        facesContext.getExternalContext().getFlash().setKeepMessages(true);
-        facesContext.addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, message, null));
     }
 
     // Getters et setters
