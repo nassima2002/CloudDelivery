@@ -12,15 +12,16 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 @Stateless
 public class ColisService {
 
+    private static final Logger LOG = Logger.getLogger(ColisService.class.getName());
 
     @PersistenceContext
     private EntityManager em;
@@ -37,16 +38,14 @@ public class ColisService {
     @Inject
     private LivreureRepository livreurRepository;
 
-    @PersistenceContext(unitName = "default")
-    private EntityManager entityManager;
     // Création d'un colis sans utilisateur
     public Colis createColis(String description, double poids, Adresse adresseDestinataire) {
         Colis colis = new Colis();
-        colis.setNumeroSuivi(UUID.randomUUID().toString()); // Génération du numéro de suivi unique
+        colis.setNumeroSuivi(UUID.randomUUID().toString());
         colis.setDescription(description);
         colis.setPoids(poids);
         colis.setDateEnvoi(LocalDateTime.now());
-        colis.setStatus(StatusColis.EN_ATTENTE); // Le colis est en attente initialement
+        colis.setStatus(StatusColis.EN_ATTENTE);
         colis.setAdresseDestinataire(adresseDestinataire);
 
         em.persist(colis);
@@ -54,11 +53,14 @@ public class ColisService {
     }
 
     public Colis associerColisAUtilisateur(Long colisId, Long utilisateurId) {
-        Colis colis = colisRepository.findById(colisId);
+        // ✅ CORRECTION: Gérer l'Optional
+        Colis colis = colisRepository.findById(colisId)
+                .orElseThrow(() -> new IllegalArgumentException("Colis non trouvé: ID=" + colisId));
+
         Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId);
 
-        if (colis == null || utilisateur == null) {
-            throw new IllegalArgumentException("Colis ou utilisateur non trouvé");
+        if (utilisateur == null) {
+            throw new IllegalArgumentException("Utilisateur non trouvé: ID=" + utilisateurId);
         }
 
         colis.setUtilisateur(utilisateur);
@@ -75,69 +77,38 @@ public class ColisService {
     }
 
     public void deleteColis(Long colisId) {
-        // Recherche le colis par ID
-        Colis colis = colisRepository.findById(colisId);
+        // ✅ CORRECTION: Gérer l'Optional
+        Colis colis = colisRepository.findById(colisId)
+                .orElseThrow(() -> new EntityNotFoundException("Colis avec l'ID " + colisId + " non trouvé"));
 
-        if (colis == null) {
-            // Si colis non trouvé, lancer une exception
-            throw new EntityNotFoundException("Colis avec l'ID " + colisId + " non trouvé");
-        }
-
-        // Marquer le colis comme supprimé
         colis.setDeleted(true);
-
-        // Sauvegarder le colis avec l'attribut 'deleted' mis à jour
         colisRepository.save(colis);
     }
 
-    /**
-     * Méthode pour mettre à jour les informations d'un colis
-     * @param colisId ID du colis à mettre à jour
-     * @param description Nouvelle description
-     * @param poids Nouveau poids
-     * @param status Nouveau statut
-     * @param rue Nouvelle rue de l'adresse
-     * @param ville Nouvelle ville
-     * @param codePostal Nouveau code postal
-     * @param pays Nouveau pays
-     * @return Le colis mis à jour
-     * @throws EntityNotFoundException si le colis n'est pas trouvé
-     */
     public Colis updateColis(Long colisId, String description, double poids, StatusColis status,
                              String rue, String ville, String codePostal, String pays) {
 
-        // Recherche le colis par ID
-        Colis colis = colisRepository.findById(colisId);
+        // ✅ CORRECTION: Gérer l'Optional
+        Colis colis = colisRepository.findById(colisId)
+                .orElseThrow(() -> new EntityNotFoundException("Colis avec l'ID " + colisId + " non trouvé"));
 
-        if (colis == null) {
-            throw new EntityNotFoundException("Colis avec l'ID " + colisId + " non trouvé");
-        }
-
-        // Mise à jour des informations du colis
         colis.setDescription(description);
         colis.setPoids(poids);
         colis.setStatus(status);
 
-        // Mise à jour de l'adresse
         Adresse adresse = colis.getAdresseDestinataire();
         if (adresse != null) {
-            // Mise à jour de l'adresse existante
             adresse.setRue(rue);
             adresse.setVille(ville);
             adresse.setCodePostal(codePostal);
             adresse.setPays(pays);
-
-            // Enregistrer les modifications de l'adresse
             adresseService.updateAdresse(adresse);
         } else {
-            // Création d'une nouvelle adresse si elle n'existe pas
             adresse = adresseService.createAdresse(rue, ville, codePostal, pays);
             colis.setAdresseDestinataire(adresse);
         }
 
-        // Sauvegarde du colis mis à jour
         colisRepository.update(colis);
-
         return colis;
     }
 
@@ -148,46 +119,107 @@ public class ColisService {
         }
         return null;
     }
+
     @Transactional
     public void affecterColisALivreur(Long idColis, Long idLivreur) {
-        Colis colis = entityManager.find(Colis.class, idColis);
-        Livreur livreur = entityManager.find(Livreur.class, idLivreur);
+        Colis colis = em.find(Colis.class, idColis);
+        Livreur livreur = em.find(Livreur.class, idLivreur);
 
         if (colis != null && livreur != null) {
             colis.setLivreur(livreur);
-            entityManager.merge(colis);
+            em.merge(colis);
         }
     }
-
-
-
 
     public List<Livreur> getLivreursIndisponibles() {
         return livreurRepository.findLivreursIndisponibles();
     }
 
-
+    /**
+     * ✅ MÉTHODE CORRIGÉE : Affecte un colis à un livreur et le rend indisponible
+     */
+    @Transactional
     public void affecterColis(Long idColis, Long idLivreur) {
-        Colis colis = colisRepository.find(idColis);
-        if (colis == null) {
-            throw new RuntimeException("Colis introuvable");
-        }
+        try {
+            LOG.info("========================================");
+            LOG.info("🔄 DÉBUT AFFECTATION");
+            LOG.info("   Colis ID: " + idColis);
+            LOG.info("   Livreur ID: " + idLivreur);
+            LOG.info("========================================");
 
-        Livreur livreur = livreurRepository.find(idLivreur);
-        if (livreur == null) {
-            throw new RuntimeException("Livreur introuvable");
-        }
+            // Récupérer le colis
+            Colis colis = colisRepository.find(idColis);
+            if (colis == null) {
+                LOG.severe("❌ Colis introuvable: ID=" + idColis);
+                throw new RuntimeException("Colis introuvable");
+            }
 
-        colis.setLivreur(livreur);
-        colis.setStatus(StatusColis.EN_TRANSIT); // Utilise l'enum correctement
-        livreur.setDisponibiliter("non");
-        colisRepository.save(colis);
+            // Récupérer le livreur
+            Livreur livreur = livreurRepository.find(idLivreur);
+            if (livreur == null) {
+                LOG.severe("❌ Livreur introuvable: ID=" + idLivreur);
+                throw new RuntimeException("Livreur introuvable");
+            }
+
+            LOG.info("✅ Entités trouvées:");
+            LOG.info("   Colis: " + colis.getDescription());
+            LOG.info("   Livreur: " + livreur.getUser().getNom() + " " + livreur.getUser().getPrenom());
+            LOG.info("   Disponibilité AVANT: " + livreur.getDisponibiliter());
+
+            // Affecter le livreur au colis
+            colis.setLivreur(livreur);
+
+            // Changer le statut du colis
+            StatusColis ancienStatut = colis.getStatus();
+            colis.setStatus(StatusColis.EN_TRANSIT);
+            LOG.info("   Statut colis: " + ancienStatut + " → EN_TRANSIT");
+
+            // Sauvegarder le colis
+            colisRepository.save(colis);
+            LOG.info("✅ Colis sauvegardé");
+
+            // ✅ Mise à jour de la disponibilité du livreur (méthode sûre)
+            LOG.info("🔄 Mise à jour disponibilité livreur...");
+            livreur.setDisponibiliter("non");
+
+            // Forcer la mise à jour immédiate
+            em.merge(livreur);
+            em.flush();
+            em.clear(); // Clear le cache pour forcer un rechargement
+
+            // Recharger pour vérifier
+            Livreur livreurVerif = em.find(Livreur.class, idLivreur);
+            LOG.info("   Disponibilité après merge: " + livreurVerif.getDisponibiliter());
+
+            LOG.info("========================================");
+            LOG.info("✅ AFFECTATION TERMINÉE");
+            LOG.info("   Colis affecté au livreur");
+            LOG.info("   Disponibilité: " + livreurVerif.getDisponibiliter());
+            LOG.info("========================================");
+
+            if (!"non".equals(livreurVerif.getDisponibiliter())) {
+                LOG.severe("⚠️ ATTENTION: Disponibilité non mise à jour!");
+                LOG.severe("   Tentative de mise à jour forcée...");
+
+                // Tentative ultime avec refresh
+                livreurVerif.setDisponibiliter("non");
+                em.merge(livreurVerif);
+                em.flush();
+            }
+
+        } catch (Exception e) {
+            LOG.severe("========================================");
+            LOG.severe("❌ ERREUR AFFECTATION: " + e.getMessage());
+            LOG.severe("========================================");
+            e.printStackTrace();
+            throw new RuntimeException("Erreur lors de l'affectation: " + e.getMessage(), e);
+        }
     }
+
     public List<Colis> getColisNonAffectes() {
         try {
             return colisRepository.findColisNonAffectes();
         } catch (Exception e) {
-            // Log or rethrow the exception as needed
             throw new RuntimeException("Erreur lors de la récupération des colis non affectés.", e);
         }
     }
@@ -197,16 +229,16 @@ public class ColisService {
                 .setParameter("livreur", livreur)
                 .getResultList();
     }
+
     public void update(Colis colis) {
         em.merge(colis);
     }
 
-
     public void updateStatusColis(Long colisId, StatusColis nouveauStatus) {
-        Colis colis = colisRepository.findById(colisId);
-        if (colis == null) {
-            throw new EntityNotFoundException("Colis non trouvé");
-        }
+        // ✅ CORRECTION: Gérer l'Optional
+        Colis colis = colisRepository.findById(colisId)
+                .orElseThrow(() -> new EntityNotFoundException("Colis non trouvé: ID=" + colisId));
+
         colis.setStatus(nouveauStatus);
         colisRepository.update(colis);
     }
@@ -217,19 +249,23 @@ public class ColisService {
                 .setParameter("status", status)
                 .getResultList();
     }
+
     public Colis getColisById(Long id) {
-        return colisRepository.findById(id);
+        // ✅ CORRECTION: Retourner null si absent (comportement original)
+        return colisRepository.findById(id).orElse(null);
     }
+
     public void mettreAJourStatusColis(Long colisId, StatusColis nouveauStatut) {
-        Optional<Colis> colisOptional = colisRepository.findByIdcolis(colisId);
+        // ✅ Cette méthode utilisait déjà la bonne approche avec Optional
+        Optional<Colis> colisOptional = colisRepository.findById(colisId);
 
         if (colisOptional.isPresent()) {
             Colis colis = colisOptional.get();
             colis.setStatus(nouveauStatut);
             colisRepository.save(colis);
-            System.out.println("✅ Colis ID " + colisId + " mis à jour avec le statut : " + nouveauStatut);
+            LOG.info("✅ Colis ID " + colisId + " mis à jour avec le statut : " + nouveauStatut);
         } else {
-            System.out.println("❌ Colis ID " + colisId + " non trouvé !");
+            LOG.warning("❌ Colis ID " + colisId + " non trouvé !");
         }
     }
 
@@ -260,5 +296,49 @@ public class ColisService {
 
     public void saveColis(Colis colis) {
         colisRepository.update(colis);
+    }
+
+    /**
+     * ✅ Méthode pour rendre un livreur disponible après livraison
+     */
+    @Transactional
+    public void marquerLivraisonTerminee(Long colisId) {
+        try {
+            // ✅ CORRECTION: Gérer l'Optional
+            Colis colis = colisRepository.findById(colisId)
+                    .orElseThrow(() -> new RuntimeException("Colis introuvable: ID=" + colisId));
+
+            Livreur livreur = colis.getLivreur();
+            if (livreur != null) {
+                // Vérifier si le livreur a d'autres colis en cours
+                List<Colis> autresColis = em.createQuery(
+                                "SELECT c FROM Colis c WHERE c.livreur.id = :livreurId " +
+                                        "AND c.status IN (:enTransit, :enAttente) AND c.id != :colisId",
+                                Colis.class)
+                        .setParameter("livreurId", livreur.getId())
+                        .setParameter("enTransit", StatusColis.EN_TRANSIT)
+                        .setParameter("enAttente", StatusColis.EN_ATTENTE)
+                        .setParameter("colisId", colisId)
+                        .getResultList();
+
+                // Si aucun autre colis en cours, rendre disponible
+                if (autresColis.isEmpty()) {
+                    livreur.setDisponibiliter("oui");
+                    em.merge(livreur);
+                    LOG.info("✅ Livreur ID=" + livreur.getId() + " redevenu disponible");
+                }
+            }
+
+            // Marquer le colis comme livré
+            colis.setStatus(StatusColis.LIVRE);
+            colis.setDateLivraison(LocalDateTime.now());
+            colisRepository.update(colis);
+
+            LOG.info("✅ Livraison terminée pour colis ID=" + colisId);
+
+        } catch (Exception e) {
+            LOG.severe("❌ Erreur marquage livraison: " + e.getMessage());
+            throw new RuntimeException("Erreur: " + e.getMessage(), e);
+        }
     }
 }

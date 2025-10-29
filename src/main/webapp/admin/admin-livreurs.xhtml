@@ -22,13 +22,11 @@
             z-index: 1000;
             animation: fadeIn 0.2s ease-out;
         }
-
         .modal-overlay.active {
             display: flex;
             align-items: center;
             justify-content: center;
         }
-
         .modal-content {
             background: white;
             border-radius: 12px;
@@ -39,21 +37,21 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             animation: slideUp 0.3s ease-out;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-
         @keyframes slideUp {
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .password-input-container {
             position: relative;
         }
-
         .password-toggle-btn {
             position: absolute;
             right: 12px;
@@ -64,16 +62,39 @@
             cursor: pointer;
             color: #6b7280;
         }
-
         .password-toggle-btn:hover {
             color: #374151;
+        }
+        .ui-messages {
+            margin-bottom: 1rem;
+        }
+        .ui-messages-info, .ui-messages-warn, .ui-messages-error, .ui-messages-fatal {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: start;
+        }
+        .ui-messages-info {
+            background-color: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            color: #1e40af;
+        }
+        .ui-messages-warn {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            color: #92400e;
+        }
+        .ui-messages-error, .ui-messages-fatal {
+            background-color: #fee2e2;
+            border-left: 4px solid #ef4444;
+            color: #991b1b;
         }
     </style>
 </h:head>
 
 <h:body class="bg-gray-50 font-sans">
 
-    <!-- Sidebar -->
     <aside class="w-64 h-screen bg-white border-r border-gray-200 fixed top-0 left-0 flex flex-col">
         <div class="px-6 py-5 border-b border-gray-200">
             <h1 class="text-xl font-semibold text-blue-600">Espace Admin</h1>
@@ -85,19 +106,16 @@
                 <i class="ri-dashboard-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
                 <span class="text-sm font-medium">Tableau de bord</span>
             </h:link>
-
             <h:link outcome="colis"
                     styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
                 <i class="ri-box-3-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
                 <span class="text-sm font-medium">Mes colis</span>
             </h:link>
-
             <h:link outcome="admin-livreurs"
                     styleClass="flex items-center px-4 py-2.5 bg-blue-50 text-blue-600 rounded-lg">
                 <i class="ri-user-star-line text-xl mr-3"></i>
                 <span class="text-sm font-medium">Livreurs</span>
             </h:link>
-
             <h:link outcome="client_list"
                     styleClass="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition group">
                 <i class="ri-group-line text-xl mr-3 text-gray-400 group-hover:text-blue-600"></i>
@@ -116,12 +134,10 @@
                         <p class="text-xs text-gray-500">Administrateur</p>
                     </div>
                 </div>
-
                 <h:link outcome="profil" styleClass="w-full mt-3 flex items-center justify-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition">
                     <i class="ri-user-settings-line mr-2"></i>
                     Mon profil
                 </h:link>
-
                 <h:form styleClass="mt-2">
                     <h:commandLink action="#{loginBean.logout}" styleClass="w-full flex items-center justify-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition">
                         <i class="ri-logout-box-line mr-2"></i>
@@ -132,28 +148,24 @@
         </div>
     </aside>
 
-    <!-- Contenu principal -->
     <main class="ml-64 p-8">
-
         <header class="mb-6">
             <div class="flex justify-between items-center mb-4">
                 <div>
                     <h1 class="text-2xl font-semibold text-gray-800">Gestion des Livreurs</h1>
                     <p class="text-sm text-gray-500 mt-1">Gérez tous les livreurs de votre plateforme</p>
                 </div>
-
                 <button onclick="ouvrirModalAjout()" type="button" class="bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition flex items-center text-sm font-medium">
                     <i class="ri-add-line mr-2"></i> Ajouter un livreur
                 </button>
             </div>
-
             <div class="bg-emerald-50 border-l-4 border-emerald-400 p-4 rounded flex items-start">
                 <i class="ri-checkbox-circle-line text-emerald-500 text-xl mr-3 mt-0.5"></i>
                 <p class="text-emerald-800 text-sm">Bienvenue dans votre tableau de bord, Admin !</p>
             </div>
         </header>
 
-        <h:messages id="messages" styleClass="mb-4" />
+        <h:messages id="messages" styleClass="mb-4" globalOnly="false" showDetail="true" showSummary="true" />
 
         <div class="bg-white rounded-lg border border-gray-200">
             <div class="p-6">
@@ -166,6 +178,7 @@
                                 <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Nom complet</th>
                                 <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Email</th>
                                 <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Disponibilité</th>
+                                <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Colis affectés</th>
                                 <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Affecter un colis</th>
                                 <th class="text-left py-3 px-4 text-sm font-medium text-gray-600">Actions</th>
                             </tr>
@@ -176,7 +189,6 @@
                                     <td class="py-3 px-4 text-sm text-gray-800 font-mono">
                                         #<h:outputText value="#{livreur.id}" />
                                     </td>
-
                                     <td class="py-3 px-4">
                                         <div class="flex items-center">
                                             <div class="bg-blue-100 rounded-full w-10 h-10 flex items-center justify-center mr-3">
@@ -189,14 +201,12 @@
                                             </div>
                                         </div>
                                     </td>
-
                                     <td class="py-3 px-4 text-sm text-gray-600">
                                         <div class="flex items-center">
                                             <i class="ri-mail-line mr-2 text-gray-400"></i>
                                             <h:outputText value="#{livreur.user.email}" />
                                         </div>
                                     </td>
-
                                     <td class="py-3 px-4">
                                         <h:outputText value="Disponible"
                                                       styleClass="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
@@ -208,7 +218,61 @@
                                                       styleClass="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
                                                       rendered="#{livreur.disponibiliter eq 'INDISPONIBLE' or livreur.disponibiliter eq 'non'}" />
                                     </td>
-
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center space-x-2">
+                                            <h:panelGroup rendered="#{livreurColisBean.getNombreColisParLivreur(livreur.id) > 0}">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    <i class="ri-box-3-line mr-1"></i>
+                                                    <h:outputText value="#{livreurColisBean.getNombreColisParLivreur(livreur.id)} colis" />
+                                                </span>
+                                                <button type="button"
+                                                        onclick="toggleColisDetails('colis-#{livreur.id}')"
+                                                        class="text-blue-600 hover:text-blue-800 text-xs px-2 py-1 hover:bg-blue-50 rounded transition"
+                                                        title="Voir les détails">
+                                                    <i class="ri-eye-line"></i>
+                                                </button>
+                                            </h:panelGroup>
+                                            <h:panelGroup rendered="#{livreurColisBean.getNombreColisParLivreur(livreur.id) == 0}">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                                    <i class="ri-inbox-line mr-1"></i>
+                                                    Aucun colis
+                                                </span>
+                                            </h:panelGroup>
+                                        </div>
+                                        <h:panelGroup rendered="#{livreurColisBean.getNombreColisParLivreur(livreur.id) > 0}">
+                                            <div id="colis-#{livreur.id}" class="hidden mt-2 p-3 bg-blue-50 rounded-lg text-xs border border-blue-200 shadow-sm">
+                                                <p class="font-semibold text-blue-900 mb-2 flex items-center">
+                                                    <i class="ri-list-check mr-1"></i>
+                                                    Colis affectés (<h:outputText value="#{livreurColisBean.getNombreColisParLivreur(livreur.id)}" />)
+                                                </p>
+                                                <ui:repeat value="#{livreurColisBean.getColisParLivreur(livreur.id)}" var="colis">
+                                                    <div class="flex items-center justify-between py-2 px-2 border-b border-blue-100 last:border-0 hover:bg-blue-100 rounded transition">
+                                                        <div class="flex items-center space-x-2">
+                                                            <i class="ri-box-3-fill text-blue-600"></i>
+                                                            <span class="font-mono text-blue-900 font-medium"><h:outputText value="#{colis.numeroSuivi}" /></span>
+                                                        </div>
+                                                        <div class="flex items-center space-x-2">
+                                                            <h:panelGroup rendered="#{colis.status eq 'EN_ATTENTE'}">
+                                                                <span class="px-2 py-0.5 rounded text-xs bg-gray-200 text-gray-700">⏳ En attente</span>
+                                                            </h:panelGroup>
+                                                            <h:panelGroup rendered="#{colis.status eq 'EN_TRANSIT'}">
+                                                                <span class="px-2 py-0.5 rounded text-xs bg-yellow-200 text-yellow-800">🚚 En transit</span>
+                                                            </h:panelGroup>
+                                                            <h:panelGroup rendered="#{colis.status eq 'EN_TRANSIT'}">
+                                                                <span class="px-2 py-0.5 rounded text-xs bg-amber-200 text-amber-800">📦 En cours</span>
+                                                            </h:panelGroup>
+                                                            <h:panelGroup rendered="#{colis.status eq 'LIVRE'}">
+                                                                <span class="px-2 py-0.5 rounded text-xs bg-green-200 text-green-800">✅ Livré</span>
+                                                            </h:panelGroup>
+                                                            <h:panelGroup rendered="#{colis.status eq 'ANNULE'}">
+                                                                <span class="px-2 py-0.5 rounded text-xs bg-red-200 text-red-800">❌ Annulé</span>
+                                                            </h:panelGroup>
+                                                        </div>
+                                                    </div>
+                                                </ui:repeat>
+                                            </div>
+                                        </h:panelGroup>
+                                    </td>
                                     <td class="py-3 px-4">
                                         <div class="flex items-center space-x-2">
                                             <h:selectOneMenu value="#{livreurColisBean.idColisAffectation}"
@@ -216,7 +280,7 @@
                                                 <f:selectItem itemLabel="-- Choisir un colis --" itemValue="#{null}" />
                                                 <f:selectItems value="#{livreurColisBean.colisNonAffectes}"
                                                                var="c"
-                                                               itemLabel="#{c.description}"
+                                                               itemLabel="📦 #{c.numeroSuivi} - #{c.description}"
                                                                itemValue="#{c.id}" />
                                             </h:selectOneMenu>
                                             <h:commandButton value="Affecter"
@@ -224,11 +288,10 @@
                                                              styleClass="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition text-sm font-medium whitespace-nowrap">
                                                 <f:setPropertyActionListener value="#{livreur.id}"
                                                                              target="#{livreurColisBean.idLivreurSelectionne}" />
-                                                <f:ajax execute="@form" render="@form :messages" />
+                                                <f:ajax execute="@form" render="@form messages" onevent="handleAffectation" />
                                             </h:commandButton>
                                         </div>
                                     </td>
-
                                     <td class="py-3 px-4">
                                         <div class="flex items-center space-x-2">
                                             <h:commandButton value="Modifier"
@@ -237,12 +300,11 @@
                                                         render=":formModification"
                                                         onevent="handleModalOpen" />
                                             </h:commandButton>
-
                                             <h:commandButton value="Supprimer"
                                                              action="#{livreurBean.supprimerLivreur(livreur.id)}"
                                                              onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livreur ?');"
                                                              styleClass="text-red-600 hover:text-red-700 text-xs font-medium px-2 py-1 hover:bg-red-50 rounded transition">
-                                                <f:ajax execute="@this" render="@form :messages" />
+                                                <f:ajax execute="@this" render="@form messages" />
                                             </h:commandButton>
                                         </div>
                                     </td>
@@ -254,10 +316,8 @@
                 </h:form>
             </div>
         </div>
-
     </main>
 
-    <!-- Modal Ajout -->
     <div id="modalAjout" class="modal-overlay">
         <div class="modal-content">
             <h:form id="formAjout">
@@ -267,73 +327,45 @@
                             <i class="ri-add-circle-line mr-2 text-blue-600"></i>
                             Ajouter un livreur
                         </h3>
-                        <button type="button" onclick="fermerModalAjout()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
-                            ×
-                        </button>
+                        <button type="button" onclick="fermerModalAjout()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
                     </div>
                 </div>
-
                 <div class="p-6 space-y-4">
                     <div class="grid grid-cols-2 gap-4">
-                        <!-- Nom -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Nom <span class="text-red-500">*</span>
-                            </label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom <span class="text-red-500">*</span></label>
                             <h:inputText value="#{livreurBean.nouveauLivreur.user.nom}"
                                          styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                         required="true"
-                                         placeholder="Entrez le nom" />
+                                         required="true" placeholder="Entrez le nom" />
                         </div>
-
-                        <!-- Prénom -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Prénom <span class="text-red-500">*</span>
-                            </label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Prénom <span class="text-red-500">*</span></label>
                             <h:inputText value="#{livreurBean.nouveauLivreur.user.prenom}"
                                          styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                         required="true"
-                                         placeholder="Entrez le prénom" />
+                                         required="true" placeholder="Entrez le prénom" />
                         </div>
                     </div>
-
-                    <!-- Email -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Email <span class="text-red-500">*</span>
-                        </label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
                         <h:inputText value="#{livreurBean.nouveauLivreur.user.email}"
                                      styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                     required="true"
-                                     placeholder="exemple@email.com" />
+                                     required="true" placeholder="exemple@email.com" />
                     </div>
-
-                    <!-- 🔹 CORRECTION: Utiliser password au lieu de motDePasse -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Mot de passe <span class="text-red-500">*</span>
-                        </label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Mot de passe <span class="text-red-500">*</span></label>
                         <div class="password-input-container">
                             <h:inputSecret id="passwordAjout"
                                            value="#{livreurBean.nouveauLivreur.password}"
                                            styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
-                                           required="true"
-                                           placeholder="Minimum 6 caractères" />
+                                           required="true" placeholder="Minimum 6 caractères" />
                             <button type="button" class="password-toggle-btn" onclick="togglePassword('formAjout:passwordAjout'); return false;">
                                 <i class="ri-eye-line" id="formAjout:passwordAjout-icon"></i>
                             </button>
                         </div>
-                        <p class="mt-1 text-xs text-gray-500">
-                            <i class="ri-information-line"></i> Le mot de passe sera hashé automatiquement
-                        </p>
+                        <p class="mt-1 text-xs text-gray-500"><i class="ri-information-line"></i> Le mot de passe sera hashé automatiquement</p>
                     </div>
-
-                    <!-- Disponibilité -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Disponibilité <span class="text-red-500">*</span>
-                        </label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Disponibilité <span class="text-red-500">*</span></label>
                         <h:selectOneMenu value="#{livreurBean.nouveauLivreur.disponibiliter}"
                                          styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                          required="true">
@@ -342,41 +374,32 @@
                         </h:selectOneMenu>
                     </div>
                 </div>
-
                 <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
-                    <button type="button"
-                            onclick="fermerModalAjout()"
-                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                        Annuler
-                    </button>
+                    <button type="button" onclick="fermerModalAjout()"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Annuler</button>
                     <h:commandButton value="Ajouter le livreur"
                                      action="#{livreurBean.ajouterLivreur}"
                                      styleClass="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center">
-                        <f:ajax execute="@form" render=":livreursTableForm :messages" onevent="handleAjout" />
+                        <f:ajax execute="@form" render=":livreursTableForm messages" onevent="handleAjout" />
                     </h:commandButton>
                 </div>
             </h:form>
         </div>
     </div>
 
-    <!-- Modal Modification -->
     <div id="modalModification" class="modal-overlay">
         <div class="modal-content">
             <h:form id="formModification">
                 <h:inputHidden id="idLivreur" value="#{livreurBean.livreurModifie.id}" />
-
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-semibold text-gray-800 flex items-center">
                             <i class="ri-pencil-line mr-2 text-amber-600"></i>
                             Modifier le livreur
                         </h3>
-                        <button type="button" onclick="fermerModalModification()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
-                            ×
-                        </button>
+                        <button type="button" onclick="fermerModalModification()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
                     </div>
                 </div>
-
                 <div class="p-6 space-y-4">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -386,7 +409,6 @@
                                          styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                          required="true" />
                         </div>
-
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
                             <h:inputText id="prenomLivreur"
@@ -395,7 +417,6 @@
                                          required="true" />
                         </div>
                     </div>
-
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
                         <h:inputText id="emailLivreur"
@@ -403,7 +424,6 @@
                                      styleClass="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                      required="true" />
                     </div>
-
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Disponibilité</label>
                         <h:selectOneMenu id="disponibiliteLivreur"
@@ -415,17 +435,13 @@
                         </h:selectOneMenu>
                     </div>
                 </div>
-
                 <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
-                    <button type="button"
-                            onclick="fermerModalModification()"
-                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                        Annuler
-                    </button>
+                    <button type="button" onclick="fermerModalModification()"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Annuler</button>
                     <h:commandButton value="Enregistrer les modifications"
                                      action="#{livreurBean.modifierLivreur}"
                                      styleClass="px-4 py-2 text-sm font-medium text-white bg-amber-600 rounded-lg hover:bg-amber-700">
-                        <f:ajax execute="@form" render=":livreursTableForm :messages" onevent="handleModification" />
+                        <f:ajax execute="@form" render=":livreursTableForm messages" onevent="handleAjout" />
                     </h:commandButton>
                 </div>
             </h:form>
@@ -481,6 +497,14 @@
             if (data.status === "success") {
                 console.log("✅ Modification réussie");
                 setTimeout(() => fermerModalModification(), 100);
+            }
+        }
+
+        function handleAffectation(data) {
+            if (data.status === "success") {
+                console.log("✅ Affectation réussie - Page rafraîchie");
+            } else if (data.status === "complete") {
+                console.log("📦 Affectation terminée");
             }
         }
 
